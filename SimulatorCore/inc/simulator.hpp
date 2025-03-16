@@ -30,7 +30,9 @@ class Integrator
 public:
     virtual ~Integrator() = default;
     
-    virtual void integrate(ParticlesStateView& particles, const ForceCalculator& force, scalar_t dt) = 0;
+    virtual void integrate(ParticlesStateView& particles, 
+                           const ForceCalculator& force_calc, 
+                           scalar_t dt) = 0;
     
     virtual IntegratorPtr clone() const = 0;
 };
@@ -51,6 +53,9 @@ public:
     void step(scalar_t dt);
     
     const ParticlesStateView& particles() const {return particles_;};
+
+    Simulator(const Simulator&) = delete;
+    Simulator& operator=(const Simulator&) = delete;
 };
 
 } // namespace Simulation

@@ -9,7 +9,9 @@ SET(SRC_DIR src)
 
 add_library(SimulatorCoreLib ${SRC_DIR}/simulator.cpp 
                              ${SRC_DIR}/utilities.cpp 
-                             ${SRC_DIR}/particles_state.cpp)
+                             ${SRC_DIR}/particles_state.cpp
+                             ${SRC_DIR}/LJ_force_calc.cpp
+                             ${SRC_DIR}/RK4_integrator.cpp)
 target_include_directories(SimulatorCoreLib PUBLIC inc)
 
 add_executable(Driver ${SRC_DIR}/main.cpp)

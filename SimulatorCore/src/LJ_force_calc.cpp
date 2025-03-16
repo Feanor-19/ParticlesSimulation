@@ -30,7 +30,7 @@ ForcesList LennardJonesForceCalc::computeForces(const ParticlesStateView &partic
 
 ForceCalcPtr Simulation::LennardJonesForceCalc::clone() const
 {
-    return std::make_unique<LennardJonesForceCalc>(new LennardJonesForceCalc{epsilon_, sigma_});
+    return std::make_unique<LennardJonesForceCalc>(*this);
 }
     
 } // namespace Simulation
