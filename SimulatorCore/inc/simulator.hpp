@@ -1,6 +1,6 @@
 #pragma once
 
-#include "particle.hpp"
+#include "particles_state.hpp"
 
 #include <vector>
 #include <memory>
@@ -8,15 +8,21 @@
 namespace Simulation
 {
 
+class ForceCalculator;
+class Integrator;
+
+using ForcesList    = std::vector<Vec2>;
+using ForceCalcPtr  = std::unique_ptr<ForceCalculator>;
+using IntegratorPtr = std::unique_ptr<Integrator>;
+
 class ForceCalculator 
 {
 public:
     virtual ~ForceCalculator() = default;
     
-    virtual void computeForces(const std::vector<Particle>& particles, 
-                               std::vector<Vec2>& forces) const = 0;
+    virtual ForcesList computeForces(const ParticlesStateView& particles) const = 0;
     
-    virtual std::unique_ptr<ForceCalculator> clone() const = 0;
+    virtual ForceCalcPtr clone() const = 0;
 };
 
 class Integrator 
@@ -24,29 +30,27 @@ class Integrator
 public:
     virtual ~Integrator() = default;
     
-    virtual void integrate(std::vector<Particle>& particles, 
-                           const ForceCalculator& force,
-                           scalar_t dt) = 0;
+    virtual void integrate(ParticlesStateView& particles, const ForceCalculator& force, scalar_t dt) = 0;
     
-    virtual std::unique_ptr<Integrator> clone() const = 0;
+    virtual IntegratorPtr clone() const = 0;
 };
 
 class Simulator
 {
 private:
-    std::vector<Particle> particles_;
-    std::unique_ptr<Integrator> integrator_;
-    std::unique_ptr<ForceCalculator> force_;
+    ParticlesState particles_;
+    IntegratorPtr  integrator_;
+    ForceCalcPtr   force_calc_;
 public:
-    Simulator(std::unique_ptr<Integrator> integrator,
-                std::unique_ptr<ForceCalculator> force);
+    Simulator(IntegratorPtr integrator, ForceCalcPtr force_calc)
+        : integrator_(std::move(integrator)), force_calc_(std::move(force_calc)) {};
 
-    // void addParticle(const Particle& p);
-    // void removeParticle(size_t index);
+    void addParticle(const scalar_t &mass, const Vec2 &pos, const Vec2 &vel);
+    void removeParticle(size_t index); // TODO подумать
     
-    void step(double dt);
+    void step(scalar_t dt);
     
-    const std::vector<Particle>& particles() const;
+    const ParticlesStateView& particles() const {return particles_;};
 };
 
 } // namespace Simulation

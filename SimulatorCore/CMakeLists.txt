@@ -7,7 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 SET(SRC_DIR src)
 
-add_library(SimulatorCoreLib ${SRC_DIR}/simulator.cpp ${SRC_DIR}/utilities.cpp)
+add_library(SimulatorCoreLib ${SRC_DIR}/simulator.cpp 
+                             ${SRC_DIR}/utilities.cpp 
+                             ${SRC_DIR}/particles_state.cpp)
 target_include_directories(SimulatorCoreLib PUBLIC inc)
 
 add_executable(Driver ${SRC_DIR}/main.cpp)
