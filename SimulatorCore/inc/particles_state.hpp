@@ -41,6 +41,13 @@ public:
     const std::vector<Vec2>     &velocities() const noexcept { return velocities_; }
 };
 
+struct Particle
+{
+    scalar_t mass_;
+    Vec2     pos_;
+    Vec2     vel_;
+};
+
 // cache-friendly, owns the state
 class ParticlesState : public ParticlesStateView {
 private:
@@ -55,7 +62,7 @@ public:
                    std::vector<Vec2>     positions, 
                    std::vector<Vec2>     velocities);
     
-    void add_particle(scalar_t mass, Vec2 pos, Vec2 vel);
+    void add_particle(Particle particle);
     void remove_particle(size_t index);
 
     void resize(size_t new_size);

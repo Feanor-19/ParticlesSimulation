@@ -20,7 +20,7 @@ class ForceCalculator
 public:
     virtual ~ForceCalculator() = default;
     
-    virtual Vec2List computeForces(const ParticlesStateView& particles) const = 0;
+    virtual Vec2List compute_forces(const ParticlesStateView& particles) const = 0;
     
     virtual ForceCalcPtr clone() const = 0;
 };
@@ -47,8 +47,8 @@ public:
     Simulator(IntegratorPtr integrator, ForceCalcPtr force_calc)
         : integrator_(std::move(integrator)), force_calc_(std::move(force_calc)) {};
 
-    void addParticle(const scalar_t &mass, const Vec2 &pos, const Vec2 &vel);
-    void removeParticle(size_t index); // TODO подумать
+    void add_particle(Particle particle);
+    void remove_particle(size_t index); // TODO подумать
     
     void step(scalar_t dt);
     

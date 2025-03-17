@@ -79,7 +79,7 @@ TEST(LennardJonesForceCalc, ZeroForceAtEquilibrium)
     Vec2List velocities = {{0,0}, {0,0}};
     ParticlesState state{{1, 1}, positions, velocities};
 
-    auto forces = force_calc.computeForces(state);
+    auto forces = force_calc.compute_forces(state);
 
     EXPECT_NEAR(forces[0].x(), 0.0, 1e-9);
     EXPECT_NEAR(forces[1].x(), 0.0, 1e-9);
@@ -97,7 +97,7 @@ TEST(LennardJonesForceCalc, NewtonThirdLaw)
     Vec2List velocities = {{0,0}, {0,0}};
     ParticlesState state{{1, 1}, positions, velocities};
 
-    auto forces = force_calc.computeForces(state);
+    auto forces = force_calc.compute_forces(state);
 
     EXPECT_DOUBLE_EQ(forces[0].x(), -forces[1].x());
     EXPECT_DOUBLE_EQ(forces[0].y(), -forces[1].y());
@@ -110,7 +110,7 @@ TEST(LennardJonesForceCalc, EmptyParticlesState)
 
     ParticlesState state{};
 
-    auto forces = force_calc.computeForces(state);
+    auto forces = force_calc.compute_forces(state);
 
     EXPECT_TRUE(forces.empty());
 }
@@ -123,7 +123,7 @@ TEST(RungeKutta4Integrator, FreeMotion)
     {
     public:
         ZeroForce() {}
-        Vec2List computeForces(const ParticlesStateView& particles) const override
+        Vec2List compute_forces(const ParticlesStateView& particles) const override
         {
             return Vec2List{particles.size(), {0,0}};
         }
@@ -152,7 +152,7 @@ TEST(RungeKutta4Integrator, ConstantAcceleration)
         const Vec2 force = {2, 3};
         
         ConstForce() {}
-        Vec2List computeForces(const ParticlesStateView& particles) const override
+        Vec2List compute_forces(const ParticlesStateView& particles) const override
         {
             return Vec2List{particles.size(), force};
         }
@@ -182,7 +182,7 @@ TEST(RungeKutta4Integrator, HarmonicOscillatorEnergyConservation)
     public:
         scalar_t k = 3.0;
         HookeForce() {}
-        Vec2List computeForces(const ParticlesStateView& particles) const override
+        Vec2List compute_forces(const ParticlesStateView& particles) const override
         {
             Vec2List forces = {particles.size(), {0,0}};
             for (size_t ind = 0; ind < particles.size(); ++ind)

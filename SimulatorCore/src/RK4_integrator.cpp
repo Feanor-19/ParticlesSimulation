@@ -19,7 +19,7 @@ namespace Simulation
 
 inline Vec2List compute_acc(const ForceCalculator &force_calc, const ParticlesStateView &state)
 {
-    auto forces = force_calc.computeForces(state);
+    auto forces = force_calc.compute_forces(state);
     
     Vec2List accelerations = forces;
     for (size_t ind = 0; ind < state.size(); ++ind)

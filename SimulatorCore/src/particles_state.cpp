@@ -28,11 +28,11 @@ ParticlesState::ParticlesState(std::vector<scalar_t> masses,
     check_invariants();
 }
 
-void ParticlesState::add_particle(scalar_t mass, Vec2 pos, Vec2 vel)
+void ParticlesState::add_particle(Particle particle)
 {
-    masses_.push_back(mass);
-    positions_.push_back(pos);
-    velocities_.push_back(vel);
+    masses_.push_back(particle.mass_);
+    positions_.push_back(particle.pos_);
+    velocities_.push_back(particle.vel_);
     check_invariants();
 }
 

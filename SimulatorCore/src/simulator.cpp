@@ -3,12 +3,12 @@
 namespace Simulation
 {
 
-void Simulator::addParticle(const scalar_t &mass, const Vec2 &pos, const Vec2 &vel)
+void Simulator::add_particle(Particle particle)
 {
-    particles_.add_particle(mass, pos, vel);
+    particles_.add_particle(particle);
 }
 
-void Simulator::removeParticle(size_t index)
+void Simulator::remove_particle(size_t index)
 {
     particles_.remove_particle(index);
 }

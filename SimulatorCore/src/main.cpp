@@ -12,7 +12,7 @@ int main()
     {
     public:
         ZeroForce() {}
-        Vec2List computeForces(const ParticlesStateView& particles) const override
+        Vec2List compute_forces(const ParticlesStateView& particles) const override
         {
             return Vec2List{particles.size(), {0,0}};
         }

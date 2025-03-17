@@ -19,7 +19,7 @@ private:
 public:
     LennardJonesForceCalc(scalar_t epsilon, scalar_t sigma) : epsilon_(epsilon), sigma_(sigma) {}
 
-    Vec2List computeForces(const ParticlesStateView& particles) const override;
+    Vec2List compute_forces(const ParticlesStateView& particles) const override;
     
     ForceCalcPtr clone() const override;
 };
