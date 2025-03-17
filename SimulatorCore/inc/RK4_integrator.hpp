@@ -21,7 +21,7 @@ private:
 
     pos_vel old, tmp1, tmp2;
 
-    void reserve_all_tmps(size_t new_cap);
+    // void prepare_all_tmps(size_t new_size); // TODO
 
     // state += k * scalar
     void apply_state_change(ParticlesStateView &state, const pos_vel& k, scalar_t scalar);

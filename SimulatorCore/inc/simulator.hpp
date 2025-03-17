@@ -11,7 +11,7 @@ namespace Simulation
 class ForceCalculator;
 class Integrator;
 
-using ForcesList    = std::vector<Vec2>;
+using Vec2List      = std::vector<Vec2>;
 using ForceCalcPtr  = std::unique_ptr<ForceCalculator>;
 using IntegratorPtr = std::unique_ptr<Integrator>;
 
@@ -20,7 +20,7 @@ class ForceCalculator
 public:
     virtual ~ForceCalculator() = default;
     
-    virtual ForcesList computeForces(const ParticlesStateView& particles) const = 0;
+    virtual Vec2List computeForces(const ParticlesStateView& particles) const = 0;
     
     virtual ForceCalcPtr clone() const = 0;
 };

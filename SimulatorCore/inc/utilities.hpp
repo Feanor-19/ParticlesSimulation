@@ -7,7 +7,7 @@ namespace Geom
 
 using scalar_t = double;
 
-const scalar_t DBL_PRECISION = 1e-30;
+const scalar_t DBL_PRECISION = 1e-10;
 
 inline bool eq(scalar_t a, scalar_t b)
 {
@@ -39,6 +39,5 @@ Vec2 operator+(const Vec2& lhs, const Vec2& rhs);
 Vec2 operator-(const Vec2& lhs, const Vec2& rhs);
 Vec2 operator*(scalar_t scalar, const Vec2& vector);
 Vec2 operator*(const Vec2& vector, scalar_t scalar);
-
 
 } // namespace Utils

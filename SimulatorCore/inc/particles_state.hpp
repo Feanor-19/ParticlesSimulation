@@ -58,8 +58,11 @@ public:
     void add_particle(scalar_t mass, Vec2 pos, Vec2 vel);
     void remove_particle(size_t index);
 
+    void resize(size_t new_size);
     void reserve(size_t new_capacity);
     void clear() noexcept;
+
+    void operator=(const ParticlesStateView& view);
 };
 
 } // namespace Simulation

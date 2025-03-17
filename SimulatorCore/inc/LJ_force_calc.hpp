@@ -13,13 +13,13 @@ private:
 
     // TODO такое нужно будет в async версии, тут это не нужно 
     // void computeForcesRange(const ParticlesStateView& particles,
-    //                         ForcesList &forces_out,
+    //                         Vec2List &forces_out,
     //                         size_t start, size_t end) const;
                             
 public:
     LennardJonesForceCalc(scalar_t epsilon, scalar_t sigma) : epsilon_(epsilon), sigma_(sigma) {}
 
-    ForcesList computeForces(const ParticlesStateView& particles) const override;
+    Vec2List computeForces(const ParticlesStateView& particles) const override;
     
     ForceCalcPtr clone() const override;
 };

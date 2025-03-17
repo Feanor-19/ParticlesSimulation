@@ -75,16 +75,32 @@ Vec2& ParticlesStateView::vel(size_t index) {
     return velocities_[index];
 }
 
+void ParticlesState::resize(size_t new_size)
+{
+    masses_.resize(new_size, 0.0);
+    positions_.resize(new_size, {0,0});
+    velocities_.resize(new_size, {0,0});
+}
+
 void ParticlesState::reserve(size_t new_capacity)
 {
+    masses_.reserve(new_capacity);
     positions_.reserve(new_capacity);
     velocities_.reserve(new_capacity);
 }
 
 void ParticlesState::clear() noexcept
 {
+    masses_.clear();
     positions_.clear();
     velocities_.clear();
+}
+
+void ParticlesState::operator=(const ParticlesStateView &view)
+{
+    masses_     = view.masses();
+    positions_  = view.positions();
+    velocities_ = view.velocities();
 }
 
 } // namespace Simulation

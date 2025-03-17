@@ -5,9 +5,9 @@
 namespace Simulation
 {
 
-ForcesList LennardJonesForceCalc::computeForces(const ParticlesStateView &particles) const
+Vec2List LennardJonesForceCalc::computeForces(const ParticlesStateView &particles) const
 {
-    ForcesList forces;
+    Vec2List forces;
     forces.assign(particles.size(), {0,0});
 
     for (size_t i = 0; i < particles.size(); ++i)

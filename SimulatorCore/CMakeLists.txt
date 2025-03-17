@@ -40,6 +40,7 @@ find_package(GTest REQUIRED)
 add_executable(UnitTests ${SRC_DIR}/unit_tests.cpp)
 target_include_directories(UnitTests PUBLIC inc)
 target_link_libraries(UnitTests gtest::gtest)
+target_link_libraries(UnitTests SimulatorCoreLib)
 
 include(GoogleTest)
 gtest_discover_tests(UnitTests)

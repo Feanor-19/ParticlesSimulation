@@ -2,27 +2,28 @@
 
 namespace Simulation
 {
-void RungeKutta4Integrator::reserve_all_tmps(size_t new_cap)
-{
-    tmpFC.reserve(new_cap);
+// TODO
+// void RungeKutta4Integrator::prepare_all_tmps(size_t new_size)
+// {
+//     tmpFC.resize(new_size);
 
-    old.pos.reserve(new_cap);
-    old.vel.reserve(new_cap);
-    
-    tmp1.pos.reserve(new_cap);
-    tmp1.vel.reserve(new_cap);
+//     old.pos.resize(new_size, {0,0});
+//     old.vel.resize(new_size, {0,0});
 
-    tmp2.pos.reserve(new_cap);
-    tmp2.vel.reserve(new_cap);
-}
+//     tmp1.pos.resize(new_size, {0,0});
+//     tmp1.vel.resize(new_size, {0,0});
 
-inline std::vector<Vec2> compute_acc(const ForceCalculator &force_calc, const ParticlesStateView &state)
+//     tmp2.pos.resize(new_size, {0,0});
+//     tmp2.vel.resize(new_size, {0,0});
+// }
+
+inline Vec2List compute_acc(const ForceCalculator &force_calc, const ParticlesStateView &state)
 {
     auto forces = force_calc.computeForces(state);
     
-    std::vector<Vec2> accelerations = forces;
+    Vec2List accelerations = forces;
     for (size_t ind = 0; ind < state.size(); ++ind)
-        accelerations[ind] *= 1 / state.mass(ind);
+        accelerations[ind] *= 1.0 / state.mass(ind);
 
     return accelerations;
 }
@@ -63,10 +64,12 @@ void RungeKutta4Integrator::integrate(ParticlesStateView &particles,
                                       const ForceCalculator &force_calc, 
                                       scalar_t dt)
 {
-    reserve_all_tmps(particles.size());
+    //prepare_all_tmps(particles.size()); // TODO
 
     old.pos = particles.positions();
     old.vel = particles.velocities();
+
+    tmpFC = particles;
 
     // --- step 1
     tmp1.pos = old.vel;
