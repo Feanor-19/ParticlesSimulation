@@ -6,4 +6,4 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(SimulatorCore)
-#add_subdirectory(GUI)
+add_subdirectory(SimulatorGUI)
