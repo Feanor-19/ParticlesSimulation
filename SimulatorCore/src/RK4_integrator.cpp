@@ -77,33 +77,10 @@ void RungeKutta4Integrator::integrate(ParticlesStateView &particles,
 
     apply_state_change(particles, tmp1, dt/6);
 
-    // --- step 2 // TODO удалить лишнее после проверки
-    // compute_state_comb(tmpFC, old, tmp1, dt/2);
-
-    // tmp2.pos = tmpFC.velocities();
-    // tmp2.vel = compute_acc(force_calc, tmpFC);
-
-    // apply_state_change(particles, tmp2, dt/3);
-
+    // --- steps 2, 3, 4
     make_step(particles, force_calc, tmp1, tmp2, dt, 2);
 
-    // --- step 3
-    // compute_state_comb(tmpFC, old, tmp2, dt/2);
-
-    // tmp1.pos = tmpFC.velocities();
-    // tmp1.vel = compute_acc(force_calc, tmpFC);
-
-    // apply_state_change(particles, tmp1, dt/3);
-
     make_step(particles, force_calc, tmp2, tmp1, dt, 2);
-
-    //--- step 4
-    // compute_state_comb(tmpFC, old, tmp1, dt);
-
-    // tmp2.pos = tmpFC.velocities();
-    // tmp2.vel = compute_acc(force_calc, tmpFC);
-
-    // apply_state_change(particles, tmp2, dt/6);
 
     make_step(particles, force_calc, tmp1, tmp2, dt, 1);
 }

@@ -22,7 +22,7 @@ int main()
 
     Vec2 init_pos = {0, 0};
     Vec2 init_vel = {1,0};
-    ParticlesState state{{1}, Vec2List{init_pos}, Vec2List{init_vel}};
+    ParticlesState state{{1}, {0}, Vec2List{init_pos}, Vec2List{init_vel}};
 
     const double dt = 1.0;
     integrator.integrate(state, force_calc, dt);

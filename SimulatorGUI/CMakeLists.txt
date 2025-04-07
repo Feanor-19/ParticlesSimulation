@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 SET(SRC_DIR src)
 
-add_executable(SimulatorGUI ${SRC_DIR}/main.cpp)
+add_executable(SimulatorGUI ${SRC_DIR}/main.cpp ${SRC_DIR}/main_frame.cpp)
 target_include_directories(SimulatorGUI PUBLIC inc)
 
 target_link_libraries(SimulatorGUI SimulatorCoreLib)

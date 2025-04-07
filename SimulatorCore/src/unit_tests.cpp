@@ -77,7 +77,7 @@ TEST(LennardJonesForceCalc, ZeroForceAtEquilibrium)
 
     Vec2List positions = {{0,0}, {pow(2, 1.0/6 * sigma), 0}};
     Vec2List velocities = {{0,0}, {0,0}};
-    ParticlesState state{{1, 1}, positions, velocities};
+    ParticlesState state{{1, 1}, {0, 0}, positions, velocities};
 
     auto forces = force_calc.compute_forces(state);
 
@@ -95,7 +95,7 @@ TEST(LennardJonesForceCalc, NewtonThirdLaw)
 
     Vec2List positions = {{0,0}, {2 * sigma, -3*sigma}};
     Vec2List velocities = {{0,0}, {0,0}};
-    ParticlesState state{{1, 1}, positions, velocities};
+    ParticlesState state{{1, 1}, {0, 0}, positions, velocities};
 
     auto forces = force_calc.compute_forces(state);
 
@@ -133,7 +133,7 @@ TEST(RungeKutta4Integrator, FreeMotion)
 
     Vec2 init_pos = {-19, 4};
     Vec2 init_vel = {7,-5};
-    ParticlesState state{{1}, Vec2List{init_pos}, Vec2List{init_vel}};
+    ParticlesState state{{1}, {0}, Vec2List{init_pos}, Vec2List{init_vel}};
 
     const double dt = 1.0;
     integrator.integrate(state, force_calc, dt);
@@ -163,7 +163,8 @@ TEST(RungeKutta4Integrator, ConstantAcceleration)
     Vec2 init_pos = {-19, 4};
     Vec2 init_vel = {7,-5};
     scalar_t mass = 1;
-    ParticlesState state{{mass}, Vec2List{init_pos}, Vec2List{init_vel}};
+    scalar_t charge = 0;
+    ParticlesState state{{mass}, {charge}, Vec2List{init_pos}, Vec2List{init_vel}};
 
     const double dt = 1.0;
     integrator.integrate(state, force_calc, dt);
@@ -175,7 +176,7 @@ TEST(RungeKutta4Integrator, ConstantAcceleration)
 
 TEST(RungeKutta4Integrator, HarmonicOscillatorEnergyConservation)
 {
-    RungeKutta4Integrator integrator{};
+    RungeKutta4Integrator integrator;
 
     class HookeForce : public ForceCalculator
     {
@@ -197,7 +198,8 @@ TEST(RungeKutta4Integrator, HarmonicOscillatorEnergyConservation)
     Vec2 init_pos = {-19, 4};
     Vec2 init_vel = {7,-5};
     scalar_t mass = 1;
-    ParticlesState state{{mass}, Vec2List{init_pos}, Vec2List{init_vel}};
+    scalar_t charge = 0;
+    ParticlesState state{{mass}, {charge}, Vec2List{init_pos}, Vec2List{init_vel}};
 
     const scalar_t dt = 1e-10;
     const size_t steps = 1000;
@@ -210,4 +212,26 @@ TEST(RungeKutta4Integrator, HarmonicOscillatorEnergyConservation)
                                 + 0.5 * mass * state.vel(0).len() * state.vel(0).len();
 
     EXPECT_NEAR(init_energy, final_energy, 1e-8);
+}
+
+TEST(Simulator, CommonTest)
+{
+    Simulator simulator{std::make_unique<RungeKutta4Integrator>(RungeKutta4Integrator{}),
+                        std::make_unique<LennardJonesForceCalc>(LennardJonesForceCalc{1.0, 1.0})};
+    
+    simulator.add_particle({1, 0, {0,0}, {1,1}});
+
+    Vec2 init_pos = simulator.particles().pos(0);
+    Vec2 init_vel = simulator.particles().vel(0);
+
+    EXPECT_TRUE((init_pos == Vec2{0, 0}));
+    EXPECT_TRUE((init_vel == Vec2{1, 1}));
+
+    scalar_t dt = 1.0;
+    simulator.step(dt);
+
+    Vec2 new_pos = simulator.particles().pos(0);
+    Vec2 new_vel = simulator.particles().vel(0);
+    
+    EXPECT_TRUE((new_pos == init_pos + init_vel*dt));
 }
