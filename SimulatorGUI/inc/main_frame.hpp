@@ -7,6 +7,7 @@
 #include "RK4_integrator.hpp"
 
 #include "particle_templates.hpp"
+#include "particle_canvas.hpp"
 
 #include <wx/wx.h>
 #include <wx/timer.h>
@@ -20,33 +21,19 @@
 using Simulation::Simulator;
 using Simulation::ParticlesStateView;
 using Simulation::scalar_t;
+using Simulation::Particle;
 
 using Simulation::RungeKutta4Integrator;
 using Simulation::LennardJonesForceCalc;
 
-class ParticleCanvas : public wxPanel 
-{    
-private:
-    const ParticlesStateView& particles_;
-    double scale_x_ = 1.0;
-    double scale_y_ = 1.0;
-
-    const double field_size_x_;
-    const double field_size_y_;
-    
-    void OnPaint(wxPaintEvent& event);
-    void OnSize(wxSizeEvent& event);
-    void UpdateScaling();
-public:
-    ParticleCanvas(wxWindow* parent, const ParticlesStateView& particles, 
-                   double field_size_x = 200.0, double field_size_y = 200.0);
-};
 
 class MainFrame : public wxFrame 
 {
 private:
     Simulator simulator_{std::make_unique<RungeKutta4Integrator>(RungeKutta4Integrator{}),
                         std::make_unique<LennardJonesForceCalc>(LennardJonesForceCalc{1.0, 1.0})};
+
+    std::vector<ParticleVisual> vis_particles_;
     
     wxPanel* panel_;
     ParticleCanvas* canvas_;
@@ -81,6 +68,9 @@ private:
     
     const int timer_period_ms_ = 16;
     const wxSize min_client_size{800, 600};
+
+    void PushBackParticle(const Particle &sim_part, const ParticleVisual &vis_part);
+    void RemoveParticle(size_t index);
 
     void CreateControls();
     void UpdateTemplatesCombo();

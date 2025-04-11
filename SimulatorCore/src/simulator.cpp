@@ -3,9 +3,9 @@
 namespace Simulation
 {
 
-void Simulator::add_particle(Particle particle)
+void Simulator::push_back_particle(Particle particle)
 {
-    particles_.add_particle(particle);
+    particles_.push_back_particle(particle);
 }
 
 void Simulator::remove_particle(size_t index)

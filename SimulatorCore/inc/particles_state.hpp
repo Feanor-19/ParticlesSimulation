@@ -83,7 +83,7 @@ public:
 
     void operator=(const ParticlesStateView& view);
     
-    void add_particle(Particle particle);
+    void push_back_particle(Particle particle);
     void remove_particle(size_t index);
 
     void resize(size_t new_size);

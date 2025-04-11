@@ -219,7 +219,7 @@ TEST(Simulator, CommonTest)
     Simulator simulator{std::make_unique<RungeKutta4Integrator>(RungeKutta4Integrator{}),
                         std::make_unique<LennardJonesForceCalc>(LennardJonesForceCalc{1.0, 1.0})};
     
-    simulator.add_particle({1, 0, {0,0}, {1,1}});
+    simulator.push_back_particle({1, 0, {0,0}, {1,1}});
 
     Vec2 init_pos = simulator.particles().pos(0);
     Vec2 init_vel = simulator.particles().vel(0);

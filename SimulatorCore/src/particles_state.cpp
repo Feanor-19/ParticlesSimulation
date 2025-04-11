@@ -76,7 +76,7 @@ ParticlesState &ParticlesState::operator=(ParticlesState &&rhs)
     return *this;
 }
 
-void ParticlesState::add_particle(Particle particle)
+void ParticlesState::push_back_particle(Particle particle)
 {
     masses_.push_back(particle.mass_);
     charges_.push_back(particle.charge_);

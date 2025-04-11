@@ -1,55 +1,29 @@
 #include "main_frame.hpp"
 
-void ParticleCanvas::OnPaint(wxPaintEvent& event) 
-{
-    wxPaintDC dc(this);
-    dc.SetBrush(*wxBLUE_BRUSH);
-    
-    for (const auto& pos : particles_.positions()) 
-    {
-        wxPoint point(
-            static_cast<int>(pos.x() * scale_x_),
-            static_cast<int>(pos.y() * scale_y_)
-        );
-        dc.DrawCircle(point, 3);
-    }
-}
-
-void ParticleCanvas::OnSize(wxSizeEvent& event) 
-{
-    UpdateScaling();
-    event.Skip();
-}
-
-void ParticleCanvas::UpdateScaling() 
-{
-    wxSize size = GetClientSize();
-    scale_x_ = size.GetWidth() / field_size_x_;
-    scale_y_ = size.GetHeight() / field_size_y_;
-}
-
-ParticleCanvas::ParticleCanvas(wxWindow* parent, const ParticlesStateView& particles, 
-                               double field_size_x, double field_size_y)
-    : wxPanel(parent), particles_(particles), 
-      field_size_x_(field_size_x), field_size_y_(field_size_y)
-{
-    if (field_size_x <= 0 || field_size_y_ <= 0)
-        throw std::invalid_argument("Field size must be > 0.");
-    SetDoubleBuffered(true);
-    Bind(wxEVT_PAINT, &ParticleCanvas::OnPaint, this);
-    Bind(wxEVT_SIZE, &ParticleCanvas::OnSize, this);
-}
-
 // TODO ПРОВЕРИТЬ ВЕЗДЕ НЕЙМИНГ, В ЧАСТНОСТИ: ПРАВИЛЬНОЕ НАЛИЧИЕ _ В КОНЦЕ
 
-void MainFrame::CreateControls() 
+void MainFrame::PushBackParticle(const Particle &sim_part, const ParticleVisual &vis_part)
+{
+    simulator_.push_back_particle(sim_part);
+    vis_particles_.push_back(vis_part);
+}
+
+void MainFrame::RemoveParticle(size_t index)
+{
+    assert(index < vis_particles_.size() && index < simulator_.particles().size());
+
+    simulator_.remove_particle(index);
+    vis_particles_.erase(vis_particles_.begin() + index);
+}
+
+void MainFrame::CreateControls()
 {
     panel_ = new wxPanel(this);
 
     wxBoxSizer* sizer_main = new wxBoxSizer(wxHORIZONTAL);
     
     // Canvas panel
-    canvas_ = new ParticleCanvas(panel_, simulator_.particles());
+    canvas_ = new ParticleCanvas(panel_, simulator_.particles(), vis_particles_);
     sizer_main->Add(canvas_, 1, wxEXPAND | wxALL, 5);
 
     // Control panel
@@ -249,10 +223,8 @@ void MainFrame::OnAddParticle(wxCommandEvent &event)
 
     if (panel_->Validate() && panel_->TransferDataFromWindow())
     {
-        // TODO
-        // simulator.add_particle(mass, charge, pos_x, pos_y, vel_x, vel_y, color, size);
-        wxLogMessage("Added particle: mass=%.2e charge=%.2e color=%s size=%d posx=%g posy=%g velx=%g vely=%g",
-                    mass, charge, color.GetAsString(), size, man_pos_x, man_pos_y, man_vel_x, man_vel_y);
+        PushBackParticle({mass, charge, {man_pos_x, man_pos_y}, {man_vel_x, man_vel_y}}, {color, size});
+        canvas_->Refresh();
     }
     else
     {

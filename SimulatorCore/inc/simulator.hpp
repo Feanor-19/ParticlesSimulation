@@ -47,7 +47,7 @@ public:
     Simulator(IntegratorPtr integrator, ForceCalcPtr force_calc)
         : integrator_(std::move(integrator)), force_calc_(std::move(force_calc)) {};
 
-    void add_particle(Particle particle);
+    void push_back_particle(Particle particle);
     void remove_particle(size_t index); // TODO подумать
     
     void step(scalar_t dt);
