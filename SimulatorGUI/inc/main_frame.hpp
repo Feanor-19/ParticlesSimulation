@@ -11,6 +11,8 @@
 #include <chrono>
 #include <stdexcept>
 
+// TODO ВВЕСТИ ЕДИНЫЙ НЕЙМИНГ!!!
+
 using Simulation::Simulator;
 using Simulation::ParticlesStateView;
 using Simulation::scalar_t;
@@ -39,16 +41,19 @@ public:
 class MainFrame : public wxFrame 
 {
 private:
-    Simulator simulator{std::make_unique<RungeKutta4Integrator>(RungeKutta4Integrator{}),
+    Simulator simulator_{std::make_unique<RungeKutta4Integrator>(RungeKutta4Integrator{}),
                         std::make_unique<LennardJonesForceCalc>(LennardJonesForceCalc{1.0, 1.0})};
-    ParticleCanvas* canvas;
-    wxToggleButton* pauseButton;
-    wxTimer timer{this, TIMER_ID};
-    const int timer_period_ms = 16;
-    bool paused = false;
-    std::chrono::time_point<std::chrono::steady_clock> last_step;
+    
+    ParticleCanvas* canvas_;
+    wxToggleButton* pauseButton_;
 
     enum {TIMER_ID = 1000};
+    wxTimer timer_{this, TIMER_ID};
+    bool paused_ = false;
+    std::chrono::time_point<std::chrono::steady_clock> last_step_;
+    
+    const int timer_period_ms_ = 16;
+    const wxSize min_client_size{800, 600};
 
     void CreateControls();
     void OnTimer(wxTimerEvent& event);

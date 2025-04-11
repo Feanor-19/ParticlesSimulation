@@ -44,37 +44,37 @@ void MainFrame::CreateControls()
 {
     wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
     
-    canvas = new ParticleCanvas(this, simulator.particles());
-    sizer->Add(canvas, 1, wxEXPAND | wxALL, 5);
+    canvas_ = new ParticleCanvas(this, simulator_.particles());
+    sizer->Add(canvas_, 1, wxEXPAND | wxALL, 5);
     
-    pauseButton = new wxToggleButton(this, wxID_ANY, "Pause");
-    pauseButton->Bind(wxEVT_TOGGLEBUTTON, &MainFrame::OnPause, this);
-    sizer->Add(pauseButton, 0, wxALIGN_TOP | wxALL, 5);
+    pauseButton_ = new wxToggleButton(this, wxID_ANY, "Pause");
+    pauseButton_->Bind(wxEVT_TOGGLEBUTTON, &MainFrame::OnPause, this);
+    sizer->Add(pauseButton_, 0, wxALIGN_TOP | wxALL, 5);
     
     SetSizerAndFit(sizer);
-    SetMinClientSize(wxSize(400, 300));
+    SetMinClientSize(min_client_size);
 }
 
 void MainFrame::OnTimer(wxTimerEvent& event) 
 {
-    if (!paused) 
+    if (!paused_) 
     {
         auto now = std::chrono::steady_clock::now();
-        std::chrono::duration<double> dt = now - last_step;
-        simulator.step(dt.count());
-        canvas->Refresh();
-        last_step = now;
+        std::chrono::duration<double> dt = now - last_step_;
+        simulator_.step(dt.count());
+        canvas_->Refresh();
+        last_step_ = now;
     }
 }
 
 void MainFrame::OnPause(wxCommandEvent& event) 
 {
-    paused = event.IsChecked();
-    if (paused) {
-        timer.Stop();
+    paused_ = event.IsChecked();
+    if (paused_) {
+        timer_.Stop();
     } else {
-        timer.Start();
-        last_step = std::chrono::steady_clock::now();
+        timer_.Start();
+        last_step_ = std::chrono::steady_clock::now();
     }
 }
 
@@ -83,11 +83,10 @@ MainFrame::MainFrame()
 {
     CreateControls();
 
-    // TODO
-    simulator.add_particle({1,1,{100,100},{10,10}});
+    simulator_.add_particle({1, 0, {10,10}, {5,5}});
 
     Bind(wxEVT_TIMER, &MainFrame::OnTimer, this, TIMER_ID);
-    timer.Start(timer_period_ms);
+    timer_.Start(timer_period_ms_);
 
-    last_step = std::chrono::steady_clock::now();
+    last_step_ = std::chrono::steady_clock::now();
 }
