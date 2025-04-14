@@ -39,6 +39,12 @@ private:
     ParticleCanvas* canvas_;
     wxToggleButton* btn_pause_;
 
+    wxButton* btn_delete;
+    wxStaticText* label_info_mass_;
+    wxStaticText* label_info_charge_;
+    wxStaticText* label_info_color_;
+    wxStaticText* label_info_size_;
+
     wxComboBox* combo_type_;
     wxTextCtrl* ctrl_pos_x_;
     wxTextCtrl* ctrl_pos_y_;
@@ -67,19 +73,22 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> last_step_;
     
     const int timer_period_ms_ = 16;
-    const wxSize min_client_size{800, 600};
+    const wxSize min_client_size{1000, 800};
 
     void PushBackParticle(const Particle &sim_part, const ParticleVisual &vis_part);
     void RemoveParticle(size_t index);
 
     void CreateControls();
     void UpdateTemplatesCombo();
+    void UpdateParticleInfo();
 
     void OnTimer(wxTimerEvent& event);
     void OnPause(wxCommandEvent& event);
     void OnManageTemplates(wxCommandEvent& event);
     void OnCreationModeChanged(wxCommandEvent& event);
     void OnAddParticle(wxCommandEvent& event);
+    void OnParticleSelected(wxCommandEvent& event);
+    void OnDeleteParticle(wxCommandEvent& event);
 
 public:
     MainFrame();

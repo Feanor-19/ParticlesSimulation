@@ -29,12 +29,12 @@ AddParticleTemplateDialog::AddParticleTemplateDialog(wxWindow* parent)
     
     grid_sizer_->Add(new wxStaticText(this, wxID_ANY, "Mass:"));
     ctrl_mass_ = new wxTextCtrl(this, wxID_ANY, "");
-    ctrl_mass_->SetValidator(DoubleGreaterThanZeroValidator(input_double_precision, &value_mass));
+    ctrl_mass_->SetValidator(DoubleGreaterThanZeroValidator(GUI_CONSTS::INPUT_DOUBLE_PRECISION, &value_mass));
     grid_sizer_->Add(ctrl_mass_, 1, wxEXPAND);
     
     grid_sizer_->Add(new wxStaticText(this, wxID_ANY, "Charge:"));
     ctrl_charge_ = new wxTextCtrl(this, wxID_ANY, "");
-    ctrl_charge_->SetValidator(wxFloatingPointValidator<double>{input_double_precision, &value_charge});
+    ctrl_charge_->SetValidator(wxFloatingPointValidator<double>{GUI_CONSTS::INPUT_DOUBLE_PRECISION, &value_charge});
     grid_sizer_->Add(ctrl_charge_, 1, wxEXPAND);
     
     grid_sizer_->Add(new wxStaticText(this, wxID_ANY, "Color:"));
@@ -43,7 +43,7 @@ AddParticleTemplateDialog::AddParticleTemplateDialog(wxWindow* parent)
     
     grid_sizer_->Add(new wxStaticText(this, wxID_ANY, "Size:"));
     ctrl_size_ = new wxSpinCtrl(this, wxID_ANY);
-    ctrl_size_->SetRange(1, 100);
+    ctrl_size_->SetRange(GUI_CONSTS::MIN_PARTICLE_SIZE, GUI_CONSTS::MAX_PARTICLE_SIZE);
     grid_sizer_->Add(ctrl_size_, 1, wxEXPAND);
     
     main_sizer_->Add(grid_sizer_, 1, wxEXPAND|wxALL, 10);

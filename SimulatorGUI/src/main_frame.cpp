@@ -30,99 +30,122 @@ void MainFrame::CreateControls()
     wxBoxSizer* sizer_control = new wxBoxSizer(wxVERTICAL);
     
     btn_pause_ = new wxToggleButton(panel_, wxID_ANY, "Pause");
-    btn_pause_->Bind(wxEVT_TOGGLEBUTTON, &MainFrame::OnPause, this);
     sizer_control->Add(btn_pause_, 0, wxEXPAND | wxBOTTOM, 10);
-
+    
+    // -- Group selected particle info
+    wxStaticBoxSizer* sizer_info = new wxStaticBoxSizer(wxVERTICAL, panel_, "Selected Particle");
+    
+    label_info_mass_    = new wxStaticText(sizer_info->GetStaticBox(), wxID_ANY, "Mass: ");
+    label_info_charge_  = new wxStaticText(sizer_info->GetStaticBox(), wxID_ANY, "Charge: ");
+    label_info_color_   = new wxStaticText(sizer_info->GetStaticBox(), wxID_ANY, "Color: ");
+    label_info_size_    = new wxStaticText(sizer_info->GetStaticBox(), wxID_ANY, "Size: ");
+    
+    sizer_info->Add(label_info_mass_, 0, wxEXPAND | wxTOP, 5);
+    sizer_info->Add(label_info_charge_, 0, wxEXPAND | wxTOP, 5);
+    sizer_info->Add(label_info_color_, 0, wxEXPAND | wxTOP, 5);
+    sizer_info->Add(label_info_size_, 0, wxEXPAND | wxTOP, 5);
+    
+    btn_delete = new wxButton(sizer_info->GetStaticBox(), wxID_ANY, "Delete");
+    sizer_info->Add(btn_delete, 0, wxEXPAND | wxTOP, 10);
+    
+    sizer_control->Add(sizer_info, 0, wxEXPAND | wxALL, 10);
+    
     // TODO может вынести в верхнее меню?
     wxButton* btn_manage = new wxButton(panel_, wxID_ANY, "Manage particle templates...");
     sizer_control->Add(btn_manage, 0, wxEXPAND, 10);
-
+    
     // -- Group add particle
     wxStaticBoxSizer* sizer_add_particle = new wxStaticBoxSizer(wxVERTICAL, panel_, "Add particle");
-
+    
     wxArrayString choices;
     choices.Add("Use predefined type");
     choices.Add("Manual input");
     radio_creation_mode_ = new wxRadioBox(sizer_add_particle->GetStaticBox(), wxID_ANY, 
-                                    "Creation mode", wxDefaultPosition, 
-                                    wxDefaultSize, choices, 1, wxRA_SPECIFY_ROWS);
-    radio_creation_mode_->Bind(wxEVT_RADIOBOX, &MainFrame::OnCreationModeChanged, this);
+    "Creation mode", wxDefaultPosition, 
+    wxDefaultSize, choices, 1, wxRA_SPECIFY_ROWS);
     sizer_add_particle->Add(radio_creation_mode_, 0, wxEXPAND|wxALL, 5);
-
+    
     // -- -- Panel for adding particle using predefined templates
     panel_predefined_ = new wxPanel(sizer_add_particle->GetStaticBox());
     combo_type_ = new wxComboBox(panel_predefined_, wxID_ANY);
     panel_predefined_->SetSizer(new wxBoxSizer(wxVERTICAL));
     panel_predefined_->GetSizer()->Add(combo_type_, 1, wxEXPAND);
     sizer_add_particle->Add(panel_predefined_, 0, wxEXPAND|wxALL, 5);
-
+    
     // -- -- Panel for adding particle using manual input
     panel_manual_ = new wxPanel(sizer_add_particle->GetStaticBox());
     panel_manual_->Hide();
     wxGridSizer* sizer_manual = new wxGridSizer(2, 5, 5);
-
+    
     sizer_manual->Add(new wxStaticText(panel_manual_, wxID_ANY, "Mass:"));
     ctrl_manual_mass_ = new wxTextCtrl(panel_manual_, wxID_ANY, "");
-    ctrl_manual_mass_->SetValidator(DoubleGreaterThanZeroValidator(input_double_precision, &man_mass_value));
+    ctrl_manual_mass_->SetValidator(
+        DoubleGreaterThanZeroValidator(GUI_CONSTS::INPUT_DOUBLE_PRECISION, &man_mass_value)
+    );
     sizer_manual->Add(ctrl_manual_mass_, 1, wxEXPAND);
-
+    
     sizer_manual->Add(new wxStaticText(panel_manual_, wxID_ANY, "Charge:"));
     ctrl_manual_charge_ = new wxTextCtrl(panel_manual_, wxID_ANY, "");
-    ctrl_manual_charge_->SetValidator(wxFloatingPointValidator<double>{input_double_precision, &man_charge_value});
+    ctrl_manual_charge_->SetValidator(
+        wxFloatingPointValidator<double>{GUI_CONSTS::INPUT_DOUBLE_PRECISION, &man_charge_value}
+    );
     sizer_manual->Add(ctrl_manual_charge_, 1, wxEXPAND);
-
+    
     sizer_manual->Add(new wxStaticText(panel_manual_, wxID_ANY, "Color:"));
     ctrl_manual_color_ = new wxColourPickerCtrl(panel_manual_, wxID_ANY);
     sizer_manual->Add(ctrl_manual_color_, 1, wxEXPAND);
-
+    
     sizer_manual->Add(new wxStaticText(panel_manual_, wxID_ANY, "Size:"));
     ctrl_manual_size_ = new wxSpinCtrl(panel_manual_, wxID_ANY);
-    ctrl_manual_size_->SetRange(1, 100);
+    ctrl_manual_size_->SetRange(GUI_CONSTS::MIN_PARTICLE_SIZE, GUI_CONSTS::MAX_PARTICLE_SIZE);
     sizer_manual->Add(ctrl_manual_size_, 1, wxEXPAND);
-
+    
     panel_manual_->SetSizer(sizer_manual);
     sizer_add_particle->Add(panel_manual_, 0, wxEXPAND|wxALL, 5);
-
+    
     // -- Position
     wxGridSizer* sizer_pos = new wxGridSizer(2, 5, 5);
     sizer_pos->Add(new wxStaticText(sizer_add_particle->GetStaticBox(), wxID_ANY, "Position X:"));
     ctrl_pos_x_ = new wxTextCtrl(sizer_add_particle->GetStaticBox(), wxID_ANY, "0.0");
-    ctrl_pos_x_->SetValidator(wxFloatingPointValidator<double>{input_double_precision, &man_pos_x});
+    ctrl_pos_x_->SetValidator(wxFloatingPointValidator<double>{GUI_CONSTS::INPUT_DOUBLE_PRECISION, &man_pos_x});
     sizer_pos->Add(ctrl_pos_x_, 1, wxEXPAND);
-
+    
     sizer_pos->Add(new wxStaticText(sizer_add_particle->GetStaticBox(), wxID_ANY, "Position Y:"));
     ctrl_pos_y_ = new wxTextCtrl(sizer_add_particle->GetStaticBox(), wxID_ANY, "0.0");
-    ctrl_pos_y_->SetValidator(wxFloatingPointValidator<double>{input_double_precision, &man_pos_y});
+    ctrl_pos_y_->SetValidator(wxFloatingPointValidator<double>{GUI_CONSTS::INPUT_DOUBLE_PRECISION, &man_pos_y});
     sizer_pos->Add(ctrl_pos_y_, 1, wxEXPAND);
     sizer_add_particle->Add(sizer_pos, 0, wxEXPAND|wxALL, 5);
-
+    
     // -- Velocity
     wxGridSizer* sizer_vel = new wxGridSizer(2, 5, 5);
     sizer_vel->Add(new wxStaticText(sizer_add_particle->GetStaticBox(), wxID_ANY, "Velocity X:"));
     ctrl_vel_x_ = new wxTextCtrl(sizer_add_particle->GetStaticBox(), wxID_ANY, "0.0");
-    ctrl_vel_x_->SetValidator(wxFloatingPointValidator<double>{input_double_precision, &man_vel_x});
+    ctrl_vel_x_->SetValidator(wxFloatingPointValidator<double>{GUI_CONSTS::INPUT_DOUBLE_PRECISION, &man_vel_x});
     sizer_vel->Add(ctrl_vel_x_, 1, wxEXPAND);
-
+    
     sizer_vel->Add(new wxStaticText(sizer_add_particle->GetStaticBox(), wxID_ANY, "Velocity Y:"));
     ctrl_vel_y_ = new wxTextCtrl(sizer_add_particle->GetStaticBox(), wxID_ANY, "0.0");
-    ctrl_vel_y_->SetValidator(wxFloatingPointValidator<double>{input_double_precision, &man_vel_y});
+    ctrl_vel_y_->SetValidator(wxFloatingPointValidator<double>{GUI_CONSTS::INPUT_DOUBLE_PRECISION, &man_vel_y});
     sizer_vel->Add(ctrl_vel_y_, 1, wxEXPAND);
     sizer_add_particle->Add(sizer_vel, 0, wxEXPAND|wxALL, 5);
-
+    
     // -- Button Add
     wxButton* btn_add = new wxButton(sizer_add_particle->GetStaticBox(), wxID_ANY, "Add");
-    sizer_add_particle->Add(btn_add, 0, wxALIGN_RIGHT|wxRIGHT|wxBOTTOM, 5);
+    sizer_add_particle->Add(btn_add, 0, wxEXPAND | wxALL, 10);
     
     // Sizer ending
     sizer_control->Add(sizer_add_particle, 0, wxEXPAND|wxALL, 10);
     sizer_main->Add(sizer_control, 0, wxEXPAND | wxALL, 5);
     panel_->SetSizer(sizer_main);
-
+    
     // Init
     UpdateTemplatesCombo();
     panel_->TransferDataToWindow();
     
-    // Eventd
+    // Event
+    btn_delete->Bind(wxEVT_BUTTON, &MainFrame::OnDeleteParticle, this);
+    radio_creation_mode_->Bind(wxEVT_RADIOBOX, &MainFrame::OnCreationModeChanged, this);
+    btn_pause_->Bind(wxEVT_TOGGLEBUTTON, &MainFrame::OnPause, this);
     btn_manage->Bind(wxEVT_BUTTON, &MainFrame::OnManageTemplates, this);
     btn_add->Bind(wxEVT_BUTTON, &MainFrame::OnAddParticle, this);
     
@@ -163,6 +186,29 @@ void MainFrame::UpdateTemplatesCombo()
 
     if(!types.empty()) 
         combo_type_->SetSelection(0);
+}
+
+void MainFrame::UpdateParticleInfo()
+{
+    if(canvas_->selected_particle().has_value()) {
+        size_t pt_ind = *(canvas_->selected_particle());
+        const auto &sim_pts = simulator_.particles();
+        ParticleVisual pt_vis = vis_particles_[pt_ind];
+
+        label_info_mass_->SetLabel(wxString::Format("Mass: %.2f", sim_pts.mass(pt_ind)));
+        label_info_charge_->SetLabel(wxString::Format("Charge: %.2f", sim_pts.charge(pt_ind)));
+        label_info_color_->SetLabel(wxString::Format("Color: %s", pt_vis.colour.GetAsString()));
+        label_info_size_->SetLabel(wxString::Format("Size: %d", pt_vis.size));
+        btn_delete->Enable();
+    }
+    else {
+        label_info_mass_->SetLabel("Mass: ");
+        label_info_charge_->SetLabel("Charge: ");
+        label_info_color_->SetLabel("Color: ");
+        label_info_size_->SetLabel("Size: ");
+        btn_delete->Disable();
+    }
+    Layout();
 }
 
 void MainFrame::OnManageTemplates(wxCommandEvent &event)
@@ -239,8 +285,25 @@ MainFrame::MainFrame()
 {
     CreateControls();
 
+    Bind(EVT_PARTICLE_SELECTED, &MainFrame::OnParticleSelected, this);
+
     Bind(wxEVT_TIMER, &MainFrame::OnTimer, this, TIMER_ID);
     timer_.Start(timer_period_ms_);
 
     last_step_ = std::chrono::steady_clock::now();
+}
+
+void MainFrame::OnParticleSelected(wxCommandEvent &event)
+{
+    UpdateParticleInfo();
+}
+
+void MainFrame::OnDeleteParticle(wxCommandEvent &event)
+{
+    if(canvas_->selected_particle().has_value()) {
+        RemoveParticle(*(canvas_->selected_particle()));
+        canvas_->unselect_particle();
+        UpdateParticleInfo();
+        canvas_->Refresh();
+    }
 }
