@@ -115,11 +115,19 @@ TEST(LennardJonesForceCalc, EmptyParticlesState)
     EXPECT_TRUE(forces.empty());
 }
 
+class UnitTestForceCalc : public ForceCalculator
+{
+public:
+    std::string get_name() const override { return ""; }
+    std::vector<ImplParam> get_params() const override { return {}; }
+    void set_params(const std::vector<scalar_t> &params) override {}
+};
+
 TEST(RungeKutta4Integrator, FreeMotion)
 {
     RungeKutta4Integrator integrator{};
 
-    class ZeroForce : public ForceCalculator
+    class ZeroForce : public UnitTestForceCalc
     {
     public:
         ZeroForce() {}
@@ -146,7 +154,7 @@ TEST(RungeKutta4Integrator, ConstantAcceleration)
 {
     RungeKutta4Integrator integrator{};
 
-    class ConstForce : public ForceCalculator
+    class ConstForce : public UnitTestForceCalc
     {
     public:
         const Vec2 force = {2, 3};
@@ -178,7 +186,7 @@ TEST(RungeKutta4Integrator, HarmonicOscillatorEnergyConservation)
 {
     RungeKutta4Integrator integrator;
 
-    class HookeForce : public ForceCalculator
+    class HookeForce : public UnitTestForceCalc
     {
     public:
         scalar_t k = 3.0;

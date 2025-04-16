@@ -28,6 +28,30 @@ Vec2List LennardJonesForceCalc::compute_forces(const ParticlesStateView &particl
     return forces;
 }
 
+std::vector<ImplParam> LennardJonesForceCalc::get_params() const
+{
+    std::vector<ImplParam> res;
+
+    for (size_t ind = 0; ind < param_names_.size(); ind++)
+        res.push_back({param_names_[ind], 0});
+
+    assert(res.size() == 2);
+
+    res[0].value = epsilon_;
+    res[1].value = sigma_;
+    
+    return res;
+}
+
+void LennardJonesForceCalc::set_params(const std::vector<scalar_t> &params)
+{
+    if (params.size() != param_names_.size())
+        throw std::invalid_argument("Wrong number of params given");
+    
+    epsilon_ = params[0];
+    sigma_   = params[1];
+}
+
 ForceCalcPtr Simulation::LennardJonesForceCalc::clone() const
 {
     return std::make_unique<LennardJonesForceCalc>(*this);

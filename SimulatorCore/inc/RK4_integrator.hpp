@@ -8,8 +8,9 @@ namespace Simulation
 class RungeKutta4Integrator : public Integrator
 {
 private:
-    // helpers for "integrate"
+    const std::string name_{"Runge-Kutta 4"};
 
+    // -- helpers for "integrate"
     ParticlesState tmpFC;
     
     // kinda named std::pair
@@ -20,8 +21,6 @@ private:
     };
 
     pos_vel old, tmp1, tmp2;
-
-    // void prepare_all_tmps(size_t new_size); // TODO
 
     // state += k * scalar
     void apply_state_change(ParticlesStateView &state, const pos_vel& k, scalar_t scalar);
@@ -36,7 +35,9 @@ public:
     void integrate(ParticlesStateView& particles, 
                    const ForceCalculator& force_calc, 
                    scalar_t dt) override;
-
+    std::string get_name() const override { return name_; }
+    std::vector<ImplParam> get_params() const override;
+    void set_params(const std::vector<scalar_t> &params_values) override;
     IntegratorPtr clone() const override;
 };
     

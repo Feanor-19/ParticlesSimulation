@@ -2,20 +2,6 @@
 
 namespace Simulation
 {
-// TODO
-// void RungeKutta4Integrator::prepare_all_tmps(size_t new_size)
-// {
-//     tmpFC.resize(new_size);
-
-//     old.pos.resize(new_size, {0,0});
-//     old.vel.resize(new_size, {0,0});
-
-//     tmp1.pos.resize(new_size, {0,0});
-//     tmp1.vel.resize(new_size, {0,0});
-
-//     tmp2.pos.resize(new_size, {0,0});
-//     tmp2.vel.resize(new_size, {0,0});
-// }
 
 inline Vec2List compute_acc(const ForceCalculator &force_calc, const ParticlesStateView &state)
 {
@@ -64,8 +50,6 @@ void RungeKutta4Integrator::integrate(ParticlesStateView &particles,
                                       const ForceCalculator &force_calc, 
                                       scalar_t dt)
 {
-    //prepare_all_tmps(particles.size()); // TODO
-
     old.pos = particles.positions();
     old.vel = particles.velocities();
 
@@ -83,6 +67,19 @@ void RungeKutta4Integrator::integrate(ParticlesStateView &particles,
     make_step(particles, force_calc, tmp2, tmp1, dt, 2);
 
     make_step(particles, force_calc, tmp1, tmp2, dt, 1);
+}
+
+std::vector<ImplParam> RungeKutta4Integrator::get_params() const
+{
+    return std::vector<ImplParam>();
+}
+
+void RungeKutta4Integrator::set_params(const std::vector<scalar_t> &params)
+{
+    if (params.size() != 0)
+        throw std::invalid_argument("Wrong number of params given");
+
+    // Well, there are no params...
 }
 
 IntegratorPtr RungeKutta4Integrator::clone() const
