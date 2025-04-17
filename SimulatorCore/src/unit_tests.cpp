@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
 
-#include "LJ_force_calc.hpp"
-#include "RK4_integrator.hpp"
+#include "impl_force_calc.hpp"
+#include "impl_integrator.hpp"
 
 using namespace Simulation;
+using namespace ImplForceCalc;
+using namespace ImplIntegrator;
 using namespace Geom;
 
 TEST(Vec2, NormVec)

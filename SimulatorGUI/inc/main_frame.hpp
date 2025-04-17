@@ -4,12 +4,12 @@
 
 #include "simulator.hpp"
 #include "sim_manager.hpp"
-#include "LJ_force_calc.hpp"
-#include "RK4_integrator.hpp"
+#include "impl_force_calc.hpp"
+#include "impl_integrator.hpp"
 
 #include "particle_templates.hpp"
 #include "particle_canvas.hpp"
-#include "impl_params_dlg.hpp"
+#include "dlg_impl_params.hpp"
 
 #include <wx/wx.h>
 #include <wx/timer.h>
@@ -24,9 +24,6 @@ using Simulation::Simulator;
 using Simulation::ParticlesStateView;
 using Simulation::scalar_t;
 using Simulation::Particle;
-
-using Simulation::RungeKutta4Integrator;
-using Simulation::LennardJonesForceCalc;
 
 class MainFrame : public wxFrame 
 {

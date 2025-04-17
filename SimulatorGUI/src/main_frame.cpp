@@ -369,8 +369,8 @@ MainFrame::MainFrame()
     timer_.Start(timer_period_ms_);
     last_step_ = std::chrono::steady_clock::now();
 
-    sim_manager_.add_integrator<RungeKutta4Integrator>();
-    sim_manager_.add_force_calc<LennardJonesForceCalc>();
+    sim_manager_.add_integrator<ImplIntegrator::RungeKutta4Integrator>();
+    sim_manager_.add_force_calc<ImplForceCalc::LennardJonesForceCalc>();
 
     sim_manager_.set_force_calc(0);
     sim_manager_.set_integrator(0);

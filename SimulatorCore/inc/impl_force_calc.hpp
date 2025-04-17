@@ -2,8 +2,10 @@
 
 #include "simulator.hpp"
 
-namespace Simulation
+namespace ImplForceCalc
 {
+
+using namespace Simulation;
 
 class LennardJonesForceCalc : public Simulation::ForceCalculator
 {
@@ -32,4 +34,4 @@ public:
     void set_params(const std::vector<scalar_t> &params_values) override;
     ForceCalcPtr clone() const override;
 };
-} // namespace Simulation
+} // namespace ImplForceCalc

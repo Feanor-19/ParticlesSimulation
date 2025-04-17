@@ -1,6 +1,6 @@
-#include "RK4_integrator.hpp"
+#include "impl_integrator.hpp"
 
-namespace Simulation
+namespace ImplIntegrator
 {
 
 inline Vec2List compute_acc(const ForceCalculator &force_calc, const ParticlesStateView &state)
@@ -87,4 +87,4 @@ IntegratorPtr RungeKutta4Integrator::clone() const
     return std::make_unique<RungeKutta4Integrator>(*this);
 }
 
-} // namespace Simulation
+} // namespace ImplIntegrator

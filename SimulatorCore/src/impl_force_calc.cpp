@@ -1,8 +1,8 @@
-#include "LJ_force_calc.hpp"
+#include "impl_force_calc.hpp"
 
 #include <cmath>
 
-namespace Simulation
+namespace ImplForceCalc
 {
 
 Vec2List LennardJonesForceCalc::compute_forces(const ParticlesStateView &particles) const
@@ -52,11 +52,11 @@ void LennardJonesForceCalc::set_params(const std::vector<scalar_t> &params)
     sigma_   = params[1];
 }
 
-ForceCalcPtr Simulation::LennardJonesForceCalc::clone() const
+ForceCalcPtr LennardJonesForceCalc::clone() const
 {
     return std::make_unique<LennardJonesForceCalc>(*this);
 }
     
-} // namespace Simulation
+} // namespace ImplForceCalc
 
 

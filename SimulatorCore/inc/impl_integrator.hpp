@@ -2,8 +2,10 @@
 
 #include "simulator.hpp"
 
-namespace Simulation
+namespace ImplIntegrator
 {
+
+using namespace Simulation;
 
 class RungeKutta4Integrator : public Integrator
 {
@@ -41,4 +43,4 @@ public:
     IntegratorPtr clone() const override;
 };
     
-} // namespace Simulation
+} // namespace ImplIntegrator

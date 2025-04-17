@@ -1,4 +1,4 @@
-#include "impl_params_dlg.hpp"
+#include "dlg_impl_params.hpp"
 
 ImplParamsDialog::ImplParamsDialog(wxWindow *parent, const std::vector<ImplParam> &params)
     : wxDialog(parent, wxID_ANY, "Parameters") 
