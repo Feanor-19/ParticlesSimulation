@@ -10,8 +10,6 @@ using namespace Simulation;
 class RungeKutta4Integrator : public Integrator
 {
 private:
-    const std::string name_{"Runge-Kutta 4"};
-
     // -- helpers for "integrate"
     ParticlesState tmpFC;
     
@@ -37,10 +35,12 @@ public:
     void integrate(ParticlesStateView& particles, 
                    const ForceCalculator& force_calc, 
                    scalar_t dt) override;
-    std::string get_name() const override { return name_; }
+    
     std::vector<ImplParam> get_params() const override;
     void set_params(const std::vector<scalar_t> &params_values) override;
     IntegratorPtr clone() const override;
+
+    static std::string get_name() { return "Runge-Kutta 4"; }
 };
     
 } // namespace ImplIntegrator

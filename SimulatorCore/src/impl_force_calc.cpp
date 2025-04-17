@@ -43,20 +43,63 @@ std::vector<ImplParam> LennardJonesForceCalc::get_params() const
     return res;
 }
 
-void LennardJonesForceCalc::set_params(const std::vector<scalar_t> &params)
+void LennardJonesForceCalc::set_params(const std::vector<scalar_t> &params_values)
 {
-    if (params.size() != param_names_.size())
+    if (params_values.size() != param_names_.size())
         throw std::invalid_argument("Wrong number of params given");
     
-    epsilon_ = params[0];
-    sigma_   = params[1];
+    epsilon_ = params_values[0];
+    sigma_   = params_values[1];
 }
 
 ForceCalcPtr LennardJonesForceCalc::clone() const
 {
     return std::make_unique<LennardJonesForceCalc>(*this);
 }
+
+Vec2List HookeCentralForceCalc::compute_forces(const ParticlesStateView &particles) const
+{
+    Vec2List forces;
+    forces.assign(particles.size(), {0,0});
+
+    for (size_t i = 0; i < particles.size(); ++i)
+    {
+        Vec2 r_vec = particles.pos(i);
+        forces[i] = (-1) * spring_const_ * (r_vec - Vec2{center_x_, center_y_});
+    }
+
+    return forces;
+}
+
+std::vector<ImplParam> HookeCentralForceCalc::get_params() const
+{
+    std::vector<ImplParam> res;
+
+    for (size_t ind = 0; ind < param_names_.size(); ind++)
+        res.push_back({param_names_[ind], 0});
     
+    assert(res.size() == 3);
+
+    res[0].value = spring_const_;
+    res[1].value = center_x_;
+    res[2].value = center_y_;
+
+    return res;
+}
+
+void HookeCentralForceCalc::set_params(const std::vector<scalar_t> &params_values)
+{
+    if (params_values.size() != param_names_.size())
+        throw std::invalid_argument("Wrong number of params given");
+
+    spring_const_ = params_values[0];
+    center_x_     = params_values[1];
+    center_y_     = params_values[2];
+}
+
+ForceCalcPtr HookeCentralForceCalc::clone() const
+{
+    return std::make_unique<HookeCentralForceCalc>(*this);
+}
+
 } // namespace ImplForceCalc
-
-

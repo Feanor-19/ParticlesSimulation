@@ -29,12 +29,10 @@ void SimManager::SimManager::set_force_calc(size_t ind)
 std::vector<std::string> SimManager::SimManager::get_all_integrator_names()
 {
     std::vector<std::string> res;
+    res.reserve(factories_integrator_.size());
 
     for (size_t ind = 0; ind < factories_integrator_.size(); ind++)
-    {
-        std::unique_ptr<Integrator> integrator_ptr = factories_integrator_[ind]->create();
-        res.push_back(integrator_ptr->get_name());
-    }
+        res.push_back(factories_integrator_[ind]->get_name());
 
     return res;
 }
@@ -42,12 +40,10 @@ std::vector<std::string> SimManager::SimManager::get_all_integrator_names()
 std::vector<std::string> SimManager::SimManager::get_all_force_calc_names()
 {
     std::vector<std::string> res;
+    res.reserve(factories_force_calc_.size());
 
     for (size_t ind = 0; ind < factories_force_calc_.size(); ind++)
-    {
-        std::unique_ptr<ForceCalculator> force_calc_ptr = factories_force_calc_[ind]->create();
-        res.push_back(force_calc_ptr->get_name());
-    }
+        res.push_back(factories_force_calc_[ind]->get_name());
 
     return res;
 }

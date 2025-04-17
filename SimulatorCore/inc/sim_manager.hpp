@@ -16,26 +16,35 @@ namespace Private
     public:
         virtual ~ISimImplFactory() = default;
         virtual std::unique_ptr<TBase> create() const = 0;
+        virtual std::string get_name() const = 0;
     };
     
     template <typename TDerived, typename TBase>
-    class SimImplFactory : public ISimImplFactory<TBase> {
+    class SimImplFactoryDefault : public ISimImplFactory<TBase> {
     public:
         std::unique_ptr<TBase> create() const override 
         {
             return std::make_unique<TDerived>();
         }
+
+        std::string get_name() const override 
+        {
+            return TDerived::get_name();
+        }
     };
 } // namespace Private
 
-using IIntFactoryPtr = std::unique_ptr< Private::ISimImplFactory<Integrator> >;
-using IFCFactoryPtr  = std::unique_ptr< Private::ISimImplFactory<ForceCalculator> >;
+using IIntegratorFactory = Private::ISimImplFactory<Integrator>;
+using IForceCalcFactory  = Private::ISimImplFactory<ForceCalculator>;
+
+using IIntFactoryPtr = std::unique_ptr<IIntegratorFactory>;
+using IFCFactoryPtr  = std::unique_ptr<IForceCalcFactory>;
 
 template <typename T>
-using IntegratorFactory = Private::SimImplFactory<T, Integrator>;
+using IntegratorFactoryDefault = Private::SimImplFactoryDefault<T, Integrator>;
 
 template <typename T>
-using ForceCalcFactory = Private::SimImplFactory<T, ForceCalculator>;
+using ForceCalcFactoryDefault = Private::SimImplFactoryDefault<T, ForceCalculator>;
 
 class SimManager
 {
@@ -51,16 +60,18 @@ public:
     void add_integrator(IIntFactoryPtr integrator_factory_ptr);
     void add_force_calc(IFCFactoryPtr  force_calc_factory_ptr);
 
+    // using IntegratorFactoryDefault
     template<typename T>
     void add_integrator()
     {
-        factories_integrator_.push_back(std::make_unique<IntegratorFactory<T>>());
+        factories_integrator_.push_back(std::make_unique<IntegratorFactoryDefault<T>>());
     }
 
+    // using ForceCalcFactoryDefault
     template<typename T>
     void add_force_calc()
     {
-        factories_force_calc_.push_back(std::make_unique<ForceCalcFactory<T>>());
+        factories_force_calc_.push_back(std::make_unique<ForceCalcFactoryDefault<T>>());
     }
 
     void set_integrator(size_t ind);

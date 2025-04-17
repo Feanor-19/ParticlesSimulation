@@ -120,7 +120,6 @@ TEST(LennardJonesForceCalc, EmptyParticlesState)
 class UnitTestForceCalc : public ForceCalculator
 {
 public:
-    std::string get_name() const override { return ""; }
     std::vector<ImplParam> get_params() const override { return {}; }
     void set_params(const std::vector<scalar_t> &params) override {}
 };

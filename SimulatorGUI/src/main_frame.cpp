@@ -173,29 +173,29 @@ inline void MainFrame::CreateImplConfMenu(wxMenu *menu,
 
 void MainFrame::CreateMenu()
 {
-        wxMenuBar* menu_bar = new wxMenuBar();
-        
-        wxMenu* menu_integrator_ = new wxMenu();
-        CreateImplConfMenu(menu_integrator_, sim_manager_.get_all_integrator_names(), 
-            [this](int index) { sim_manager_.set_integrator(index); },
-            [this]() { ShowIntegratorParams(); });
-        
-        wxMenu* menu_force_calc_ = new wxMenu();
-        CreateImplConfMenu(menu_force_calc_, sim_manager_.get_all_force_calc_names(),
-            [this](int index) { sim_manager_.set_force_calc(index); },
-            [this]() { ShowForceCalcParams(); });
-        
-        wxMenu* menu_help_ = new wxMenu();
-        menu_help_->Append(wxID_ABOUT);
-        Bind(wxEVT_MENU, [this](wxCommandEvent&) {
-            wxMessageBox(msg_help, "About");
-        }, wxID_ABOUT);
-        
-        menu_bar->Append(menu_integrator_, "&Integrator");
-        menu_bar->Append(menu_force_calc_, "&Force Calculator");
-        menu_bar->Append(menu_help_, "&Help");
-        
-        SetMenuBar(menu_bar);
+    wxMenuBar* menu_bar = new wxMenuBar();
+    
+    wxMenu* menu_integrator_ = new wxMenu();
+    CreateImplConfMenu(menu_integrator_, sim_manager_.get_all_integrator_names(), 
+        [this](size_t index) { sim_manager_.set_integrator(index); },
+        [this]() { ShowIntegratorParams(); });
+    
+    wxMenu* menu_force_calc_ = new wxMenu();
+    CreateImplConfMenu(menu_force_calc_, sim_manager_.get_all_force_calc_names(),
+        [this](size_t index) { sim_manager_.set_force_calc(index); },
+        [this]() { ShowForceCalcParams(); });
+    
+    wxMenu* menu_help_ = new wxMenu();
+    menu_help_->Append(wxID_ABOUT);
+    Bind(wxEVT_MENU, [this](wxCommandEvent&) {
+        wxMessageBox(msg_help, "About");
+    }, wxID_ABOUT);
+    
+    menu_bar->Append(menu_integrator_, "&Integrator");
+    menu_bar->Append(menu_force_calc_, "&Force Calculator");
+    menu_bar->Append(menu_help_, "&Help");
+    
+    SetMenuBar(menu_bar);
 }
 
 void MainFrame::OnTimer(wxTimerEvent& event) 
@@ -360,6 +360,13 @@ void MainFrame::OnAddParticle(wxCommandEvent &event)
 MainFrame::MainFrame() 
     : wxFrame(nullptr, wxID_ANY, "Physics Simulation"), sim_manager_(simulator_)
 {
+    sim_manager_.add_integrator<ImplIntegrator::RungeKutta4Integrator>();
+    sim_manager_.add_force_calc<ImplForceCalc::LennardJonesForceCalc>();
+    sim_manager_.add_force_calc<ImplForceCalc::HookeCentralForceCalc>();
+
+    sim_manager_.set_force_calc(0);
+    sim_manager_.set_integrator(0);
+    
     CreateControls();
     CreateMenu();
 
@@ -368,12 +375,6 @@ MainFrame::MainFrame()
     Bind(wxEVT_TIMER, &MainFrame::OnTimer, this, TIMER_ID);
     timer_.Start(timer_period_ms_);
     last_step_ = std::chrono::steady_clock::now();
-
-    sim_manager_.add_integrator<ImplIntegrator::RungeKutta4Integrator>();
-    sim_manager_.add_force_calc<ImplForceCalc::LennardJonesForceCalc>();
-
-    sim_manager_.set_force_calc(0);
-    sim_manager_.set_integrator(0);
 }
 
 void MainFrame::OnParticleSelected(wxCommandEvent &event)

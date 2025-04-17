@@ -27,7 +27,6 @@ public:
     virtual ~ForceCalculator() = default;
     
     virtual Vec2List compute_forces(const ParticlesStateView& particles) const = 0;
-    virtual std::string get_name() const = 0;
     virtual std::vector<ImplParam> get_params() const = 0;
     virtual void set_params(const std::vector<scalar_t> &params_values) = 0;
     virtual ForceCalcPtr clone() const = 0;
@@ -41,7 +40,6 @@ public:
     virtual void integrate(ParticlesStateView& particles, 
                            const ForceCalculator& force_calc, 
                            scalar_t dt) = 0;
-    virtual std::string get_name() const = 0;
     virtual std::vector<ImplParam> get_params() const = 0;
     virtual void set_params(const std::vector<scalar_t> &params_values) = 0;
     virtual IntegratorPtr clone() const = 0;
@@ -58,10 +56,11 @@ public:
         return list;
     }
 
-    std::string get_name() const override { return "Mock Force Calculator"; }
     std::vector<ImplParam> get_params() const override { return {}; }
     void set_params(const std::vector<scalar_t> &params_values) override {}
     ForceCalcPtr clone() const override { return std::make_unique<MockForceCalculator>(*this); }
+    
+    static std::string get_name() { return "Mock Force Calculator"; }
 };
 
 class MockIntegrator : public Integrator
@@ -69,10 +68,12 @@ class MockIntegrator : public Integrator
     void integrate(ParticlesStateView& particles, 
         const ForceCalculator& force_calc, 
         scalar_t dt) override {}
-    std::string get_name() const override { return "Mock Integrator"; }
+    
     std::vector<ImplParam> get_params() const override { return {}; }
     void set_params(const std::vector<scalar_t> &params_values) override {}
     IntegratorPtr clone() const override { return std::make_unique<MockIntegrator>(*this); };
+    
+    static std::string get_name() { return "Mock Integrator"; }
 };
 
 class Simulator
