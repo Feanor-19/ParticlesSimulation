@@ -95,6 +95,8 @@ public:
     void step(scalar_t dt);
     
     const ParticlesStateView& particles() const {return particles_;}
+    const IntegratorPtr& integrator() const { return integrator_; }
+    const ForceCalcPtr&  force_calc() const { return force_calc_; }
 
     void change_integrator(IntegratorPtr new_integrator) { integrator_ = std::move(new_integrator); }
     void change_force_calc(ForceCalcPtr  new_force_calc) { force_calc_ = std::move(new_force_calc); }

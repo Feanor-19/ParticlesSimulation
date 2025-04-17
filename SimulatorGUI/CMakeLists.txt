@@ -11,7 +11,8 @@ add_executable(SimulatorGUI ${SRC_DIR}/main.cpp
                             ${SRC_DIR}/main_frame.cpp 
                             ${SRC_DIR}/particle_templates.cpp
                             ${SRC_DIR}/validators.cpp
-                            ${SRC_DIR}/particle_canvas.cpp)
+                            ${SRC_DIR}/particle_canvas.cpp
+                            ${SRC_DIR}/impl_params_dlg.cpp)
 target_include_directories(SimulatorGUI PUBLIC inc)
 
 target_link_libraries(SimulatorGUI SimulatorCoreLib)

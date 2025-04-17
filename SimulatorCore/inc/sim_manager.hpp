@@ -65,6 +65,9 @@ public:
 
     void set_integrator(size_t ind);
     void set_force_calc(size_t ind);
+
+    std::vector<std::string> get_all_integrator_names();
+    std::vector<std::string> get_all_force_calc_names();
 };
 
 } // namespace SimManager 

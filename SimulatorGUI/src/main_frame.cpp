@@ -136,7 +136,7 @@ void MainFrame::CreateControls()
     // Sizer ending
     sizer_control->Add(sizer_add_particle, 0, wxEXPAND|wxALL, 10);
     sizer_main->Add(sizer_control, 0, wxEXPAND | wxALL, 5);
-    panel_->SetSizer(sizer_main);
+    panel_->SetSizerAndFit(sizer_main);
     
     // Init
     UpdateTemplatesCombo();
@@ -149,8 +149,53 @@ void MainFrame::CreateControls()
     btn_manage->Bind(wxEVT_BUTTON, &MainFrame::OnManageTemplates, this);
     btn_add->Bind(wxEVT_BUTTON, &MainFrame::OnAddParticle, this);
     
-    //SetSizerAndFit(sizer_main);
     SetMinClientSize(min_client_size);
+}
+
+template <typename SelectHandler>
+inline void MainFrame::CreateImplConfMenu(wxMenu *menu, 
+                                          const std::vector<std::string> &items, 
+                                          SelectHandler select_handler, 
+                                          std::function<void()> params_handler)
+{
+    wxMenu* subMenu = new wxMenu();
+    for(size_t i = 0; i < items.size(); ++i) {
+        subMenu->AppendRadioItem(wxID_ANY, items[i]);
+        subMenu->Bind(wxEVT_MENU, [=](wxCommandEvent&) { select_handler(i); }, 
+                        subMenu->FindItemByPosition(i)->GetId());
+    }
+    
+    menu->AppendSubMenu(subMenu, "Select");
+    menu->AppendSeparator();
+    menu->Append(wxID_PREFERENCES, "&Configure...");
+    menu->Bind(wxEVT_MENU, [=](wxCommandEvent&) { params_handler(); }, wxID_PREFERENCES);
+}
+
+void MainFrame::CreateMenu()
+{
+        wxMenuBar* menu_bar = new wxMenuBar();
+        
+        wxMenu* menu_integrator_ = new wxMenu();
+        CreateImplConfMenu(menu_integrator_, sim_manager_.get_all_integrator_names(), 
+            [this](int index) { sim_manager_.set_integrator(index); },
+            [this]() { ShowIntegratorParams(); });
+        
+        wxMenu* menu_force_calc_ = new wxMenu();
+        CreateImplConfMenu(menu_force_calc_, sim_manager_.get_all_force_calc_names(),
+            [this](int index) { sim_manager_.set_force_calc(index); },
+            [this]() { ShowForceCalcParams(); });
+        
+        wxMenu* menu_help_ = new wxMenu();
+        menu_help_->Append(wxID_ABOUT);
+        Bind(wxEVT_MENU, [this](wxCommandEvent&) {
+            wxMessageBox(msg_help, "About");
+        }, wxID_ABOUT);
+        
+        menu_bar->Append(menu_integrator_, "&Integrator");
+        menu_bar->Append(menu_force_calc_, "&Force Calculator");
+        menu_bar->Append(menu_help_, "&Help");
+        
+        SetMenuBar(menu_bar);
 }
 
 void MainFrame::OnTimer(wxTimerEvent& event) 
@@ -209,6 +254,38 @@ void MainFrame::UpdateParticleInfo()
         btn_delete->Disable();
     }
     Layout();
+}
+
+// TODO подумать, как объединить с ShowForceCalcParams()
+void MainFrame::ShowIntegratorParams()
+{
+    auto params = simulator_.integrator()->get_params();
+        
+    if (params.empty()) {
+        wxMessageBox("No parameters for this integrator", "Info");
+        return;
+    }
+    
+    ImplParamsDialog dlg(this, params);
+    if(dlg.ShowModal() == wxID_OK) {
+        auto values = dlg.GetValues();
+        simulator_.integrator()->set_params(values);
+    }
+}
+
+void MainFrame::ShowForceCalcParams()
+{
+    auto params = simulator_.force_calc()->get_params();
+    if(params.empty()) {
+        wxMessageBox("No parameters for this force calculator", "Info");
+        return;
+    }
+    
+    ImplParamsDialog dlg(this, params);
+    if(dlg.ShowModal() == wxID_OK) {
+        auto values = dlg.GetValues();
+        simulator_.force_calc()->set_params(values);
+    }
 }
 
 void MainFrame::OnManageTemplates(wxCommandEvent &event)
@@ -281,16 +358,22 @@ void MainFrame::OnAddParticle(wxCommandEvent &event)
 }
 
 MainFrame::MainFrame() 
-    : wxFrame(nullptr, wxID_ANY, "Physics Simulation")
+    : wxFrame(nullptr, wxID_ANY, "Physics Simulation"), sim_manager_(simulator_)
 {
     CreateControls();
+    CreateMenu();
 
     Bind(EVT_PARTICLE_SELECTED, &MainFrame::OnParticleSelected, this);
 
     Bind(wxEVT_TIMER, &MainFrame::OnTimer, this, TIMER_ID);
     timer_.Start(timer_period_ms_);
-
     last_step_ = std::chrono::steady_clock::now();
+
+    sim_manager_.add_integrator<RungeKutta4Integrator>();
+    sim_manager_.add_force_calc<LennardJonesForceCalc>();
+
+    sim_manager_.set_force_calc(0);
+    sim_manager_.set_integrator(0);
 }
 
 void MainFrame::OnParticleSelected(wxCommandEvent &event)

@@ -3,11 +3,13 @@
 #include "common.hpp"
 
 #include "simulator.hpp"
+#include "sim_manager.hpp"
 #include "LJ_force_calc.hpp"
 #include "RK4_integrator.hpp"
 
 #include "particle_templates.hpp"
 #include "particle_canvas.hpp"
+#include "impl_params_dlg.hpp"
 
 #include <wx/wx.h>
 #include <wx/timer.h>
@@ -26,12 +28,11 @@ using Simulation::Particle;
 using Simulation::RungeKutta4Integrator;
 using Simulation::LennardJonesForceCalc;
 
-
 class MainFrame : public wxFrame 
 {
 private:
-    Simulator simulator_{std::make_unique<RungeKutta4Integrator>(RungeKutta4Integrator{}),
-                        std::make_unique<LennardJonesForceCalc>(LennardJonesForceCalc{1.0, 1.0})};
+    Simulator simulator_;
+    SimManager::SimManager sim_manager_;
 
     std::vector<ParticleVisual> vis_particles_;
     
@@ -75,10 +76,23 @@ private:
     const int timer_period_ms_ = 16;
     const wxSize min_client_size{1000, 800};
 
+    const std::string msg_help = "CHANGE ME";
+
     void PushBackParticle(const Particle &sim_part, const ParticleVisual &vis_part);
     void RemoveParticle(size_t index);
 
     void CreateControls();
+    void CreateMenu();
+    
+    template<typename SelectHandler>
+    void CreateImplConfMenu(wxMenu* menu, 
+        const std::vector<std::string>& items,
+        SelectHandler select_handler,
+        std::function<void()> params_handler);
+        
+    void ShowIntegratorParams();
+    void ShowForceCalcParams();
+    
     void UpdateTemplatesCombo();
     void UpdateParticleInfo();
 

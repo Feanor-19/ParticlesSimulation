@@ -24,7 +24,7 @@ private:
     //                         size_t start, size_t end) const;
                             
 public:
-    LennardJonesForceCalc(scalar_t epsilon, scalar_t sigma) : epsilon_(epsilon), sigma_(sigma) {}
+    LennardJonesForceCalc(scalar_t epsilon = 1.0, scalar_t sigma = 1.0) : epsilon_(epsilon), sigma_(sigma) {}
 
     Vec2List compute_forces(const ParticlesStateView& particles) const override;
     std::string get_name() const override { return name_; }
