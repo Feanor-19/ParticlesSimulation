@@ -71,7 +71,7 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> last_step_;
     
     const int timer_period_ms_ = 16;
-    const wxSize min_client_size{1000, 800};
+    const wxSize field_size_{500, 500};
 
     const std::string msg_help = "CHANGE ME";
 

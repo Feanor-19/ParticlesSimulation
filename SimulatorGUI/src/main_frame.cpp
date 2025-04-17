@@ -23,7 +23,9 @@ void MainFrame::CreateControls()
     wxBoxSizer* sizer_main = new wxBoxSizer(wxHORIZONTAL);
     
     // Canvas panel
-    canvas_ = new ParticleCanvas(panel_, simulator_.particles(), vis_particles_);
+    canvas_ = new ParticleCanvas(panel_, simulator_.particles(), vis_particles_,
+                                 field_size_.GetX(), field_size_.GetY());
+    canvas_->SetMinClientSize(field_size_);
     sizer_main->Add(canvas_, 1, wxEXPAND | wxALL, 5);
 
     // Control panel
@@ -136,20 +138,26 @@ void MainFrame::CreateControls()
     // Sizer ending
     sizer_control->Add(sizer_add_particle, 0, wxEXPAND|wxALL, 10);
     sizer_main->Add(sizer_control, 0, wxEXPAND | wxALL, 5);
+
+    // to get good size
+    panel_manual_->Show();
+    panel_predefined_->Show();
+
     panel_->SetSizerAndFit(sizer_main);
     
+    panel_manual_->Show(false);
+    panel_predefined_->Show(false);
+
     // Init
     UpdateTemplatesCombo();
     panel_->TransferDataToWindow();
     
-    // Event
+    // Events
     btn_delete->Bind(wxEVT_BUTTON, &MainFrame::OnDeleteParticle, this);
     radio_creation_mode_->Bind(wxEVT_RADIOBOX, &MainFrame::OnCreationModeChanged, this);
     btn_pause_->Bind(wxEVT_TOGGLEBUTTON, &MainFrame::OnPause, this);
     btn_manage->Bind(wxEVT_BUTTON, &MainFrame::OnManageTemplates, this);
     btn_add->Bind(wxEVT_BUTTON, &MainFrame::OnAddParticle, this);
-    
-    SetMinClientSize(min_client_size);
 }
 
 template <typename SelectHandler>
@@ -363,6 +371,7 @@ MainFrame::MainFrame()
     sim_manager_.add_integrator<ImplIntegrator::RungeKutta4Integrator>();
     sim_manager_.add_force_calc<ImplForceCalc::LennardJonesForceCalc>();
     sim_manager_.add_force_calc<ImplForceCalc::HookeCentralForceCalc>();
+    sim_manager_.add_force_calc<ImplForceCalc::HookeAmongForceCalc>();
 
     sim_manager_.set_force_calc(0);
     sim_manager_.set_integrator(0);
@@ -375,6 +384,8 @@ MainFrame::MainFrame()
     Bind(wxEVT_TIMER, &MainFrame::OnTimer, this, TIMER_ID);
     timer_.Start(timer_period_ms_);
     last_step_ = std::chrono::steady_clock::now();
+
+    SetMinClientSize(GetBestSize());
 }
 
 void MainFrame::OnParticleSelected(wxCommandEvent &event)

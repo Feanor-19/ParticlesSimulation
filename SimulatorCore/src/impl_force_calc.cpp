@@ -102,4 +102,54 @@ ForceCalcPtr HookeCentralForceCalc::clone() const
     return std::make_unique<HookeCentralForceCalc>(*this);
 }
 
+Vec2List HookeAmongForceCalc::compute_forces(const ParticlesStateView &particles) const
+{
+    Vec2List forces;
+    forces.assign(particles.size(), {0,0});
+
+    for (size_t i = 0; i < particles.size(); ++i)
+    {
+        for (size_t j = i + 1; j < particles.size(); ++j)
+        {
+            Vec2 r_vec = particles.pos(j) - particles.pos(i);
+            scalar_t r = r_vec.len();
+            Vec2 force_on_j_from_i = (-spring_const_ * (r - unstretched_len_) / r) * r_vec; 
+
+            forces[j] += force_on_j_from_i;
+            forces[i] += -force_on_j_from_i;
+        }
+    }
+
+    return forces;
+}
+
+std::vector<ImplParam> HookeAmongForceCalc::get_params() const
+{
+    std::vector<ImplParam> res;
+
+    for (size_t ind = 0; ind < param_names_.size(); ind++)
+        res.push_back({param_names_[ind], 0});
+    
+    assert(res.size() == 2);
+
+    res[0].value = spring_const_;
+    res[1].value = unstretched_len_;
+
+    return res;
+}
+
+void HookeAmongForceCalc::set_params(const std::vector<scalar_t> &params_values)
+{
+    if (params_values.size() != param_names_.size())
+        throw std::invalid_argument("Wrong number of params given");
+
+    spring_const_    = params_values[0];
+    unstretched_len_ = params_values[1];
+}
+
+ForceCalcPtr HookeAmongForceCalc::clone() const
+{
+    return std::make_unique<HookeAmongForceCalc>(*this);
+}
+
 } // namespace ImplForceCalc

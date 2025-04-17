@@ -117,4 +117,6 @@ ParticleCanvas::ParticleCanvas(wxWindow* parent, const ParticlesStateView& sim_p
     Bind(wxEVT_PAINT, &ParticleCanvas::OnPaint, this);
     Bind(wxEVT_SIZE, &ParticleCanvas::OnSize, this);
     Bind(wxEVT_LEFT_DOWN, &ParticleCanvas::OnLeftClick, this);
+
+    UpdateScaling();
 }

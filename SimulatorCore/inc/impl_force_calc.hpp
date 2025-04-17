@@ -63,4 +63,28 @@ public:
     static std::string get_name() { return "Hooke Central"; }    
 };
 
+class HookeAmongForceCalc : public ForceCalculator
+{
+private:
+    scalar_t spring_const_;
+    scalar_t unstretched_len_;
+
+    const std::vector<std::string> param_names_ = 
+    {
+        "Spring constant",
+        "Unstretched Length"
+    };
+
+public:
+    HookeAmongForceCalc(scalar_t spring_const = 1.0, scalar_t unstretched_len = 1.0)
+        : spring_const_(spring_const), unstretched_len_(unstretched_len) {}
+
+    Vec2List compute_forces(const ParticlesStateView& particles) const override;
+    std::vector<ImplParam> get_params() const override;
+    void set_params(const std::vector<scalar_t> &params_values) override;
+    ForceCalcPtr clone() const override;
+    
+    static std::string get_name() { return "Hooke Among"; }  
+};
+
 } // namespace ImplForceCalc
