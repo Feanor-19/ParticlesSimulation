@@ -68,7 +68,7 @@ private:
     std::vector<Vec2>     positions_;
     std::vector<Vec2>     velocities_;
 
-    void check_invariants() const;
+    void debug_check_invariants() const;
 public:
     ParticlesState() : ParticlesStateView(masses_, charges_, positions_, velocities_) {}
     ParticlesState(std::vector<scalar_t> masses,
@@ -86,7 +86,6 @@ public:
     void push_back_particle(Particle particle);
     void remove_particle(size_t index);
 
-    void resize(size_t new_size);
     void reserve(size_t new_capacity);
     void clear() noexcept;
 };

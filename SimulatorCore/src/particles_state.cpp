@@ -8,7 +8,7 @@ namespace EXCEPTION_MSG
 constexpr std::string_view OUT_OF_RANGE = "Particle index out of range";
 } // namespace EXCEPTION_MSG
 
-void ParticlesState::check_invariants() const
+void ParticlesState::debug_check_invariants() const
 {
     assert((masses_.size()    == charges_.size()
          && charges_.size()   == positions_.size()
@@ -30,7 +30,7 @@ ParticlesState::ParticlesState(std::vector<scalar_t> masses,
        && positions_.size() == velocities_.size())) {
         throw std::invalid_argument("Initialization vectors size mismatch");
     }
-    check_invariants();
+    debug_check_invariants();
 }
 
 ParticlesState::ParticlesState(const ParticlesState &other) 
@@ -82,7 +82,7 @@ void ParticlesState::push_back_particle(Particle particle)
     charges_.push_back(particle.charge_);
     positions_.push_back(particle.pos_);
     velocities_.push_back(particle.vel_);
-    check_invariants();
+    debug_check_invariants();
 }
 
 void ParticlesState::remove_particle(size_t index)
@@ -94,7 +94,7 @@ void ParticlesState::remove_particle(size_t index)
     charges_.erase(charges_.begin() + index);
     positions_.erase(positions_.begin() + index);
     velocities_.erase(velocities_.begin() + index);
-    check_invariants();
+    debug_check_invariants();
 }
 
 const scalar_t &ParticlesStateView::mass(size_t index) const
@@ -129,14 +129,6 @@ const Vec2& ParticlesStateView::vel(size_t index) const {
 Vec2& ParticlesStateView::vel(size_t index) {
     if (index >= size()) throw std::out_of_range(EXCEPTION_MSG::OUT_OF_RANGE.data());
     return velocities_[index];
-}
-
-void ParticlesState::resize(size_t new_size)
-{
-    masses_.resize(new_size, 0.0);
-    charges_.resize(new_size, 0.0);
-    positions_.resize(new_size, {0,0});
-    velocities_.resize(new_size, {0,0});
 }
 
 void ParticlesState::reserve(size_t new_capacity)

@@ -28,7 +28,7 @@ private:
 
     std::optional<size_t> selected_particle_ = std::nullopt;
 
-    void check_invariants() const;
+    void debug_check_invariants() const;
     
     void OnPaint(wxPaintEvent& event);
     void OnSize(wxSizeEvent& event);

@@ -8,14 +8,14 @@ wxDEFINE_EVENT(EVT_PARTICLE_SELECTED, wxCommandEvent);
 
 
 
-void ParticleCanvas::check_invariants() const
+void ParticleCanvas::debug_check_invariants() const
 {
     assert(sim_particles_.size() == vis_particles_.size());
 }
 
 void ParticleCanvas::OnPaint(wxPaintEvent &event)
 {
-    check_invariants();
+    debug_check_invariants();
 
     wxPaintDC dc(this);
     

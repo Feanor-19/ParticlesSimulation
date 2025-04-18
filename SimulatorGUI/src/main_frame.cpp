@@ -37,11 +37,7 @@ void MainFrame::CreateControls()
     sizer_info->Add(btn_delete, 0, wxEXPAND | wxTOP, 10);
     
     sizer_control->Add(sizer_info, 0, wxEXPAND | wxALL, 10);
-    
-    // TODO может вынести в верхнее меню?
-    wxButton* btn_manage = new wxButton(panel_, wxID_ANY, "Manage particle templates...");
-    sizer_control->Add(btn_manage, 0, wxEXPAND, 10);
-    
+
     // -- Group add particle
     wxStaticBoxSizer* sizer_add_particle = new wxStaticBoxSizer(wxVERTICAL, panel_, "Add particle");
     
@@ -132,7 +128,7 @@ void MainFrame::CreateControls()
     panel_->SetSizerAndFit(sizer_main);
     
     panel_manual_->Show(false);
-    panel_predefined_->Show(false);
+    panel_predefined_->Show();
 
     // Init
     UpdateTemplatesCombo();
@@ -142,7 +138,6 @@ void MainFrame::CreateControls()
     btn_delete->Bind(wxEVT_BUTTON, &MainFrame::OnDeleteParticle, this);
     radio_creation_mode_->Bind(wxEVT_RADIOBOX, &MainFrame::OnCreationModeChanged, this);
     btn_pause_->Bind(wxEVT_TOGGLEBUTTON, &MainFrame::OnPause, this);
-    btn_manage->Bind(wxEVT_BUTTON, &MainFrame::OnManageTemplates, this);
     btn_add->Bind(wxEVT_BUTTON, &MainFrame::OnAddParticle, this);
 }
 
@@ -181,6 +176,11 @@ void MainFrame::CreateMenu()
         [this](size_t index) { sim_gui_wrapper_.sim_impl_manager().set_force_calc(index); },
         [this]() { ShowForceCalcParams(); });
     
+    wxMenu* menu_pt_templates = new wxMenu();
+    menu_pt_templates->Append(wxID_ANY, "&Manage Particle Templates...");
+    Bind(wxEVT_MENU, &MainFrame::OnManageTemplates, this, 
+                menu_pt_templates->FindItemByPosition(0)->GetId());
+
     wxMenu* menu_help_ = new wxMenu();
     menu_help_->Append(wxID_ABOUT);
     Bind(wxEVT_MENU, [this](wxCommandEvent&) {
@@ -189,6 +189,7 @@ void MainFrame::CreateMenu()
     
     menu_bar->Append(menu_integrator_, "&Integrator");
     menu_bar->Append(menu_force_calc_, "&Force Calculator");
+    menu_bar->Append(menu_pt_templates, "&Particle Templates");
     menu_bar->Append(menu_help_, "&Help");
     
     SetMenuBar(menu_bar);
