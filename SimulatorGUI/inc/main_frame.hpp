@@ -3,9 +3,10 @@
 #include "common.hpp"
 
 #include "simulator.hpp"
-#include "sim_manager.hpp"
+#include "sim_impl_manager.hpp"
 #include "impl_force_calc.hpp"
 #include "impl_integrator.hpp"
+#include "sim_gui_wrapper.hpp"
 
 #include "particle_templates.hpp"
 #include "particle_canvas.hpp"
@@ -25,13 +26,12 @@ using Simulation::ParticlesStateView;
 using Simulation::scalar_t;
 using Simulation::Particle;
 
+using SimGUI::SimGUIWrapper;
+
 class MainFrame : public wxFrame 
 {
 private:
-    Simulator simulator_;
-    SimManager::SimManager sim_manager_;
-
-    std::vector<ParticleVisual> vis_particles_;
+    SimGUIWrapper sim_gui_wrapper_;
     
     wxPanel* panel_;
     ParticleCanvas* canvas_;
@@ -74,9 +74,6 @@ private:
     const wxSize field_size_{500, 500};
 
     const std::string msg_help = "CHANGE ME";
-
-    void PushBackParticle(const Particle &sim_part, const ParticleVisual &vis_part);
-    void RemoveParticle(size_t index);
 
     void CreateControls();
     void CreateMenu();

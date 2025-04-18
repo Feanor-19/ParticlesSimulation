@@ -1,17 +1,14 @@
 #pragma once
 
 #include "simulator.hpp"
+#include "sim_gui_wrapper.hpp"
 
 #include <wx/wx.h>
 #include <optional>
 
+// TODO исправить using в hpp
 using Simulation::ParticlesStateView;
-
-struct ParticleVisual
-{
-    wxColour colour;
-    int size;
-};
+using SimGUI::ParticleVisual;
 
 wxDECLARE_EVENT(EVT_PARTICLE_SELECTED, wxCommandEvent);
 

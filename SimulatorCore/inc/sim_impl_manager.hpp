@@ -2,7 +2,7 @@
 
 #include "simulator.hpp"
 
-namespace SimManager
+namespace SimImplManager
 {
 
 using Simulation::Simulator;
@@ -46,7 +46,7 @@ using IntegratorFactoryDefault = Private::SimImplFactoryDefault<T, Integrator>;
 template <typename T>
 using ForceCalcFactoryDefault = Private::SimImplFactoryDefault<T, ForceCalculator>;
 
-class SimManager
+class SimImplManager
 {
 private:
     std::vector<IIntFactoryPtr> factories_integrator_;
@@ -54,7 +54,7 @@ private:
 
     Simulator &simulator_ref_;
 public:
-    SimManager(Simulator &sim_ref)
+    SimImplManager(Simulator &sim_ref)
         : simulator_ref_(sim_ref) {};
 
     void add_integrator(IIntFactoryPtr integrator_factory_ptr);
@@ -81,4 +81,4 @@ public:
     std::vector<std::string> get_all_force_calc_names();
 };
 
-} // namespace SimManager 
+} // namespace SimImplManager 

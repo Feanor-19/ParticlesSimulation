@@ -1,21 +1,5 @@
 #include "main_frame.hpp"
 
-// TODO ПРОВЕРИТЬ ВЕЗДЕ НЕЙМИНГ, В ЧАСТНОСТИ: ПРАВИЛЬНОЕ НАЛИЧИЕ _ В КОНЦЕ
-
-void MainFrame::PushBackParticle(const Particle &sim_part, const ParticleVisual &vis_part)
-{
-    simulator_.push_back_particle(sim_part);
-    vis_particles_.push_back(vis_part);
-}
-
-void MainFrame::RemoveParticle(size_t index)
-{
-    assert(index < vis_particles_.size() && index < simulator_.particles().size());
-
-    simulator_.remove_particle(index);
-    vis_particles_.erase(vis_particles_.begin() + index);
-}
-
 void MainFrame::CreateControls()
 {
     panel_ = new wxPanel(this);
@@ -23,7 +7,9 @@ void MainFrame::CreateControls()
     wxBoxSizer* sizer_main = new wxBoxSizer(wxHORIZONTAL);
     
     // Canvas panel
-    canvas_ = new ParticleCanvas(panel_, simulator_.particles(), vis_particles_,
+    canvas_ = new ParticleCanvas(panel_, 
+                                 sim_gui_wrapper_.sim_particles(), 
+                                 sim_gui_wrapper_.vis_particles(),
                                  field_size_.GetX(), field_size_.GetY());
     canvas_->SetMinClientSize(field_size_);
     sizer_main->Add(canvas_, 1, wxEXPAND | wxALL, 5);
@@ -182,15 +168,17 @@ inline void MainFrame::CreateImplConfMenu(wxMenu *menu,
 void MainFrame::CreateMenu()
 {
     wxMenuBar* menu_bar = new wxMenuBar();
+
+    auto &sim_impl_manager = sim_gui_wrapper_.sim_impl_manager();
     
     wxMenu* menu_integrator_ = new wxMenu();
-    CreateImplConfMenu(menu_integrator_, sim_manager_.get_all_integrator_names(), 
-        [this](size_t index) { sim_manager_.set_integrator(index); },
+    CreateImplConfMenu(menu_integrator_, sim_impl_manager.get_all_integrator_names(), 
+        [this](size_t index) { sim_gui_wrapper_.sim_impl_manager().set_integrator(index); },
         [this]() { ShowIntegratorParams(); });
     
     wxMenu* menu_force_calc_ = new wxMenu();
-    CreateImplConfMenu(menu_force_calc_, sim_manager_.get_all_force_calc_names(),
-        [this](size_t index) { sim_manager_.set_force_calc(index); },
+    CreateImplConfMenu(menu_force_calc_, sim_impl_manager.get_all_force_calc_names(),
+        [this](size_t index) { sim_gui_wrapper_.sim_impl_manager().set_force_calc(index); },
         [this]() { ShowForceCalcParams(); });
     
     wxMenu* menu_help_ = new wxMenu();
@@ -212,7 +200,7 @@ void MainFrame::OnTimer(wxTimerEvent& event)
     {
         auto now = std::chrono::steady_clock::now();
         std::chrono::duration<double> dt = now - last_step_;
-        simulator_.step(dt.count());
+        sim_gui_wrapper_.sim_step(dt.count());
         canvas_->Refresh();
         last_step_ = now;
     }
@@ -245,8 +233,8 @@ void MainFrame::UpdateParticleInfo()
 {
     if(canvas_->selected_particle().has_value()) {
         size_t pt_ind = *(canvas_->selected_particle());
-        const auto &sim_pts = simulator_.particles();
-        ParticleVisual pt_vis = vis_particles_[pt_ind];
+        const auto &sim_pts = sim_gui_wrapper_.sim_particles();
+        ParticleVisual pt_vis = sim_gui_wrapper_.vis_particles()[pt_ind];
 
         label_info_mass_->SetLabel(wxString::Format("Mass: %.2f", sim_pts.mass(pt_ind)));
         label_info_charge_->SetLabel(wxString::Format("Charge: %.2f", sim_pts.charge(pt_ind)));
@@ -267,7 +255,7 @@ void MainFrame::UpdateParticleInfo()
 // TODO подумать, как объединить с ShowForceCalcParams()
 void MainFrame::ShowIntegratorParams()
 {
-    auto params = simulator_.integrator()->get_params();
+    auto params = sim_gui_wrapper_.integrator()->get_params();
         
     if (params.empty()) {
         wxMessageBox("No parameters for this integrator", "Info");
@@ -277,13 +265,13 @@ void MainFrame::ShowIntegratorParams()
     ImplParamsDialog dlg(this, params);
     if(dlg.ShowModal() == wxID_OK) {
         auto values = dlg.GetValues();
-        simulator_.integrator()->set_params(values);
+        sim_gui_wrapper_.integrator()->set_params(values);
     }
 }
 
 void MainFrame::ShowForceCalcParams()
 {
-    auto params = simulator_.force_calc()->get_params();
+    auto params = sim_gui_wrapper_.force_calc()->get_params();
     if(params.empty()) {
         wxMessageBox("No parameters for this force calculator", "Info");
         return;
@@ -292,7 +280,7 @@ void MainFrame::ShowForceCalcParams()
     ImplParamsDialog dlg(this, params);
     if(dlg.ShowModal() == wxID_OK) {
         auto values = dlg.GetValues();
-        simulator_.force_calc()->set_params(values);
+        sim_gui_wrapper_.force_calc()->set_params(values);
     }
 }
 
@@ -354,7 +342,10 @@ void MainFrame::OnAddParticle(wxCommandEvent &event)
 
     if (panel_->Validate() && panel_->TransferDataFromWindow())
     {
-        PushBackParticle({mass, charge, {man_pos_x, man_pos_y}, {man_vel_x, man_vel_y}}, {color, size});
+        sim_gui_wrapper_.push_back_particle({mass, charge, 
+                                          {man_pos_x, man_pos_y}, 
+                                          {man_vel_x, man_vel_y}}, 
+                                          {color, size});
         canvas_->Refresh();
     }
     else
@@ -366,15 +357,17 @@ void MainFrame::OnAddParticle(wxCommandEvent &event)
 }
 
 MainFrame::MainFrame() 
-    : wxFrame(nullptr, wxID_ANY, "Physics Simulation"), sim_manager_(simulator_)
+    : wxFrame(nullptr, wxID_ANY, "Physics Simulation")
 {
-    sim_manager_.add_integrator<ImplIntegrator::RungeKutta4Integrator>();
-    sim_manager_.add_force_calc<ImplForceCalc::LennardJonesForceCalc>();
-    sim_manager_.add_force_calc<ImplForceCalc::HookeCentralForceCalc>();
-    sim_manager_.add_force_calc<ImplForceCalc::HookeAmongForceCalc>();
+    auto &sim_impl_manager = sim_gui_wrapper_.sim_impl_manager();
 
-    sim_manager_.set_force_calc(0);
-    sim_manager_.set_integrator(0);
+    sim_impl_manager.add_integrator<ImplIntegrator::RungeKutta4Integrator>();
+    sim_impl_manager.add_force_calc<ImplForceCalc::LennardJonesForceCalc>();
+    sim_impl_manager.add_force_calc<ImplForceCalc::HookeCentralForceCalc>();
+    sim_impl_manager.add_force_calc<ImplForceCalc::HookeAmongForceCalc>();
+
+    sim_impl_manager.set_force_calc(0);
+    sim_impl_manager.set_integrator(0);
     
     CreateControls();
     CreateMenu();
@@ -396,7 +389,7 @@ void MainFrame::OnParticleSelected(wxCommandEvent &event)
 void MainFrame::OnDeleteParticle(wxCommandEvent &event)
 {
     if(canvas_->selected_particle().has_value()) {
-        RemoveParticle(*(canvas_->selected_particle()));
+        sim_gui_wrapper_.remove_particle(*(canvas_->selected_particle()));
         canvas_->unselect_particle();
         UpdateParticleInfo();
         canvas_->Refresh();
