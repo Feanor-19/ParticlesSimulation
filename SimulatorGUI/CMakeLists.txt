@@ -14,7 +14,8 @@ add_executable(SimulatorGUI ${SRC_DIR}/main.cpp
                             ${SRC_DIR}/particle_canvas.cpp
                             ${SRC_DIR}/dlg_impl_params.cpp
                             ${SRC_DIR}/db_particles.cpp
-                            ${SRC_DIR}/sim_gui_wrapper.cpp)
+                            ${SRC_DIR}/sim_gui_wrapper.cpp
+                            ${SRC_DIR}/dlg_save_load.cpp)
 target_include_directories(SimulatorGUI PUBLIC inc)
 
 target_link_libraries(SimulatorGUI SimulatorCoreLib)

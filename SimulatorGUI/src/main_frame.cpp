@@ -181,6 +181,14 @@ void MainFrame::CreateMenu()
     Bind(wxEVT_MENU, &MainFrame::OnManageTemplates, this, 
                 menu_pt_templates->FindItemByPosition(0)->GetId());
 
+    wxMenu* menu_save_load = new wxMenu();
+    menu_save_load->Append(wxID_ANY, "&Save...");
+    Bind(wxEVT_MENU, &MainFrame::OnSave, this, 
+            menu_save_load->FindItemByPosition(0)->GetId());
+    menu_save_load->Append(wxID_ANY, "&Load...");
+    Bind(wxEVT_MENU, &MainFrame::OnLoad, this, 
+        menu_save_load->FindItemByPosition(1)->GetId());
+
     wxMenu* menu_help_ = new wxMenu();
     menu_help_->Append(wxID_ABOUT);
     Bind(wxEVT_MENU, [this](wxCommandEvent&) {
@@ -190,6 +198,7 @@ void MainFrame::CreateMenu()
     menu_bar->Append(menu_integrator_, "&Integrator");
     menu_bar->Append(menu_force_calc_, "&Force Calculator");
     menu_bar->Append(menu_pt_templates, "&Particle Templates");
+    menu_bar->Append(menu_save_load, "&Save && Load");
     menu_bar->Append(menu_help_, "&Help");
     
     SetMenuBar(menu_bar);
@@ -395,4 +404,54 @@ void MainFrame::OnDeleteParticle(wxCommandEvent &event)
         UpdateParticleInfo();
         canvas_->Refresh();
     }
+}
+
+void MainFrame::OnSave(wxCommandEvent &event)
+{
+    try
+    {
+        SaveDialog dlg(this);
+        if (dlg.ShowModal() == wxID_OK) {
+            wxString name = dlg.GetEnteredName();
+            
+            if (!name.IsEmpty())
+            {
+                sim_gui_wrapper_.save_particles(std::string(name));
+                wxLogMessage("Saving as: %s", name); // TODO
+            }
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        wxLogError("Error: %s", e.what());
+    }
+}
+
+void MainFrame::OnLoad(wxCommandEvent &event)
+{
+    std::vector<std::string> save_names = sim_gui_wrapper_.get_save_names();
+
+    auto del_save_func = [this](const std::string &save_name){
+        sim_gui_wrapper_.delete_save(save_name);
+    };
+
+    try
+    {
+        LoadDialog dlg(this, save_names, del_save_func);
+        if (dlg.ShowModal() == wxID_OK) {
+            wxString name = dlg.GetSelection();
+            if (!name.IsEmpty()) {
+                wxLogMessage("Loading: %s", name); // TODO
+                sim_gui_wrapper_.load_particles(std::string(name));
+                canvas_->Refresh();
+            }
+        }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        wxLogError("Error: %s", e.what());
+    }
+    
 }

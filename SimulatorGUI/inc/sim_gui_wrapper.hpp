@@ -1,7 +1,10 @@
 #pragma once
 
+#include "common.hpp"
+
 #include "simulator.hpp"
 #include "sim_impl_manager.hpp"
+#include "db_particles.hpp"
 
 #include <wx/wx.h>
 
@@ -16,12 +19,6 @@ using Simulation::Particle;
 using Simulation::IntegratorPtr;
 using Simulation::ForceCalcPtr;
 
-struct ParticleVisual
-{
-    wxColour colour;
-    int size;
-};
-
 class SimGUIWrapper
 {
 private:
@@ -30,9 +27,9 @@ private:
 
     std::vector<ParticleVisual> vis_particles_;
 
-    // здесь будет БД
+    DBParticles db_particles_;
 public:
-    SimGUIWrapper() : sim_impl_manager_(simulator_) {};
+    SimGUIWrapper() : sim_impl_manager_(simulator_), db_particles_(GUI_CONSTS::DB_PATH) {}
     
     SimImplManager::SimImplManager &sim_impl_manager() { return sim_impl_manager_; }
 
@@ -46,6 +43,11 @@ public:
     
     void push_back_particle(const Particle &sim_part, const ParticleVisual &vis_part);
     void remove_particle(size_t index);
+
+    void save_particles(const std::string& save_name);
+    void load_particles(const std::string& save_name);
+    void delete_save(const std::string& save_name);
+    std::vector<std::string> get_save_names();
 };
 
 } // namespace SimGUI

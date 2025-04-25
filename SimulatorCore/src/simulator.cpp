@@ -18,4 +18,9 @@ void Simulator::step(scalar_t dt)
     integrator_->integrate(particles_, *force_calc_, dt);
 }
 
+void Simulator::load_particles(ParticlesState&& new_particles)
+{
+    particles_ = std::move(new_particles);
+}
+
 } // namespace Simulation

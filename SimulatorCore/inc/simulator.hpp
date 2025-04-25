@@ -102,6 +102,8 @@ public:
     void change_integrator(IntegratorPtr new_integrator) { integrator_ = std::move(new_integrator); }
     void change_force_calc(ForceCalcPtr  new_force_calc) { force_calc_ = std::move(new_force_calc); }
 
+    void load_particles(ParticlesState&& new_particles);
+
     Simulator(const Simulator&) = delete;
     Simulator& operator=(const Simulator&) = delete;
 };

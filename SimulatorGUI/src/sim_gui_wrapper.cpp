@@ -22,3 +22,29 @@ void SimGUIWrapper::remove_particle(size_t index)
     simulator_.remove_particle(index);
     vis_particles_.erase(vis_particles_.begin() + index);
 }
+
+void SimGUI::SimGUIWrapper::save_particles(const std::string &save_name)
+{
+    db_particles_.save_state(save_name, simulator_.particles(), vis_particles_);
+}
+
+void SimGUI::SimGUIWrapper::load_particles(const std::string &save_name)
+{
+    Simulation::ParticlesState tmp_sim;
+    std::vector<ParticleVisual> tmp_vis;
+
+    db_particles_.load_state(save_name, tmp_sim, tmp_vis);
+
+    simulator_.load_particles(std::move(tmp_sim));
+    vis_particles_ = std::move(tmp_vis);
+}
+
+void SimGUI::SimGUIWrapper::delete_save(const std::string &save_name)
+{
+    db_particles_.delete_save(save_name);
+}
+
+std::vector<std::string> SimGUI::SimGUIWrapper::get_save_names()
+{
+    return db_particles_.get_saves();
+}

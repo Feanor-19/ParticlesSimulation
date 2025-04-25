@@ -11,6 +11,7 @@
 #include "particle_templates.hpp"
 #include "particle_canvas.hpp"
 #include "dlg_impl_params.hpp"
+#include "dlg_save_load.hpp"
 
 #include <wx/wx.h>
 #include <wx/timer.h>
@@ -97,6 +98,8 @@ private:
     void OnAddParticle(wxCommandEvent& event);
     void OnParticleSelected(wxCommandEvent& event);
     void OnDeleteParticle(wxCommandEvent& event);
+    void OnSave(wxCommandEvent& event);
+    void OnLoad(wxCommandEvent& event);
 
 public:
     MainFrame();

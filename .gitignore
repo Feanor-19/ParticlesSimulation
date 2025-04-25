@@ -6,3 +6,4 @@ CMakeUserPresets.json
 perf.data
 perf.data.old
 ref_test_data/*
+*.db
