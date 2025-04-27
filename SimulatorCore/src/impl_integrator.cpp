@@ -3,7 +3,7 @@
 namespace ImplIntegrator
 {
 
-inline Vec2List compute_acc(const ForceCalculator &force_calc, const ParticlesStateView &state)
+inline Vec2List compute_acc(ForceCalculator &force_calc, const ParticlesStateView &state)
 {
     auto forces = force_calc.compute_forces(state);
     
@@ -35,7 +35,7 @@ void RungeKutta4Integrator::compute_state_comb( ParticlesStateView &state_res,
     }
 }
 
-void RungeKutta4Integrator::make_step(ParticlesStateView &particles, const ForceCalculator &force_calc, 
+void RungeKutta4Integrator::make_step(ParticlesStateView &particles, ForceCalculator &force_calc, 
                                       pos_vel &k_prev, pos_vel &k_next, scalar_t dt, scalar_t coeff)
 {
     compute_state_comb(tmpFC, old, k_prev, dt / coeff);
@@ -47,7 +47,7 @@ void RungeKutta4Integrator::make_step(ParticlesStateView &particles, const Force
 }
 
 void RungeKutta4Integrator::integrate(ParticlesStateView &particles, 
-                                      const ForceCalculator &force_calc, 
+                                      ForceCalculator &force_calc, 
                                       scalar_t dt)
 {
     old.pos = particles.positions();

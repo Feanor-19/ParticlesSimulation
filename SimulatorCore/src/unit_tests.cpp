@@ -117,6 +117,48 @@ TEST(LennardJonesForceCalc, EmptyParticlesState)
     EXPECT_TRUE(forces.empty());
 }
 
+TEST(LennardJonesForceCalc, AllImplsCoherence)
+{
+    LennardJonesForceCalc           fc_lj;
+    LennardJonesOMPForceCalc        fc_lj_OMP;
+    LennardJonesThreadPoolForceCalc fc_lj_TP;
+
+    size_t x_size = 5;
+    size_t y_size = 5; 
+    size_t size = x_size * y_size;
+
+    std::vector<scalar_t> masses;
+    std::vector<scalar_t> charges; 
+    std::vector<Vec2>     positions; 
+    std::vector<Vec2>     velocities;
+
+    masses.resize(size, 1.0);
+    charges.resize(size, 0.0);
+    positions.resize(size, {0,0});
+    velocities.resize(size, {0,0});
+
+    for (size_t y = 0; y < y_size; y++)
+    {
+        for (size_t x = 0; x < x_size; x++)
+        {
+            positions[y * x_size + x] = {static_cast<double>(x), static_cast<double>(y)};
+        }
+    }
+
+    ParticlesState particles{masses, charges, positions, velocities};
+
+    Vec2List res     = fc_lj.compute_forces(particles);
+    Vec2List res_OMP = fc_lj_OMP.compute_forces(particles);
+    Vec2List res_TP  = fc_lj_TP.compute_forces(particles);
+
+    ASSERT_TRUE(res.size() == res_OMP.size() && res_OMP.size() == res_TP.size());
+    for (size_t ind = 0; ind < res.size(); ind++)
+    {
+        EXPECT_TRUE(res    [ind] == res_OMP[ind]);
+        EXPECT_TRUE(res_OMP[ind] == res_TP [ind]);
+    }
+}
+
 class UnitTestForceCalc : public ForceCalculator
 {
 public:
@@ -132,7 +174,7 @@ TEST(RungeKutta4Integrator, FreeMotion)
     {
     public:
         ZeroForce() {}
-        Vec2List compute_forces(const ParticlesStateView& particles) const override
+        Vec2List compute_forces(const ParticlesStateView& particles) override
         {
             return Vec2List{particles.size(), {0,0}};
         }
@@ -161,7 +203,7 @@ TEST(RungeKutta4Integrator, ConstantAcceleration)
         const Vec2 force = {2, 3};
         
         ConstForce() {}
-        Vec2List compute_forces(const ParticlesStateView& particles) const override
+        Vec2List compute_forces(const ParticlesStateView& particles) override
         {
             return Vec2List{particles.size(), force};
         }
@@ -192,7 +234,7 @@ TEST(RungeKutta4Integrator, HarmonicOscillatorEnergyConservation)
     public:
         scalar_t k = 3.0;
         HookeForce() {}
-        Vec2List compute_forces(const ParticlesStateView& particles) const override
+        Vec2List compute_forces(const ParticlesStateView& particles) override
         {
             Vec2List forces = {particles.size(), {0,0}};
             for (size_t ind = 0; ind < particles.size(); ++ind)

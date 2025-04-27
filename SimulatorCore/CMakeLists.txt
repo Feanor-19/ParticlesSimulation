@@ -12,7 +12,8 @@ add_library(SimulatorCoreLib ${SRC_DIR}/simulator.cpp
                              ${SRC_DIR}/particles_state.cpp
                              ${SRC_DIR}/sim_impl_manager.cpp
                              ${SRC_DIR}/impl_force_calc.cpp
-                             ${SRC_DIR}/impl_integrator.cpp)
+                             ${SRC_DIR}/impl_integrator.cpp
+                             ${SRC_DIR}/thread_pool.cpp)
 target_include_directories(SimulatorCoreLib PUBLIC inc)
 
 add_executable(Driver ${SRC_DIR}/main.cpp)
@@ -31,3 +32,14 @@ target_link_libraries(UnitTests SimulatorCoreLib)
 
 include(GoogleTest)
 gtest_discover_tests(UnitTests)
+
+# benchmark
+find_package(benchmark REQUIRED)
+
+add_executable(benchmark ${SRC_DIR}/benchmark.cpp)
+target_include_directories(benchmark PUBLIC inc)
+target_link_libraries(benchmark benchmark::benchmark)
+target_link_libraries(benchmark SimulatorCoreLib)
+
+# open MP
+set(CMAKE_CXX_FLAGS "-fopenmp")

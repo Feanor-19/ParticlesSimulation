@@ -26,7 +26,7 @@ class ForceCalculator
 public:
     virtual ~ForceCalculator() = default;
     
-    virtual Vec2List compute_forces(const ParticlesStateView& particles) const = 0;
+    virtual Vec2List compute_forces(const ParticlesStateView& particles) = 0;
     virtual std::vector<ImplParam> get_params() const = 0;
     virtual void set_params(const std::vector<scalar_t> &params_values) = 0;
     virtual ForceCalcPtr clone() const = 0;
@@ -38,7 +38,7 @@ public:
     virtual ~Integrator() = default;
     
     virtual void integrate(ParticlesStateView& particles, 
-                           const ForceCalculator& force_calc, 
+                           ForceCalculator& force_calc, 
                            scalar_t dt) = 0;
     virtual std::vector<ImplParam> get_params() const = 0;
     virtual void set_params(const std::vector<scalar_t> &params_values) = 0;
@@ -49,7 +49,7 @@ class MockForceCalculator : public ForceCalculator
 {
 public:
     
-    Vec2List compute_forces(const ParticlesStateView& particles) const override
+    Vec2List compute_forces(const ParticlesStateView& particles) override
     {
         Vec2List list;
         list.assign(particles.size(), {0, 0});
@@ -66,8 +66,8 @@ public:
 class MockIntegrator : public Integrator
 {
     void integrate(ParticlesStateView& particles, 
-        const ForceCalculator& force_calc, 
-        scalar_t dt) override {}
+                   ForceCalculator& force_calc, 
+                   scalar_t dt) override {}
     
     std::vector<ImplParam> get_params() const override { return {}; }
     void set_params(const std::vector<scalar_t> &params_values) override {}

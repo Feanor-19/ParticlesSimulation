@@ -31,3 +31,6 @@ target_link_libraries(SimulatorGUI SQLite::SQLite3)
 
 find_package(SQLiteCpp)
 target_link_libraries(SimulatorGUI SQLiteCpp)
+
+# open MP
+set(CMAKE_CXX_FLAGS "-fopenmp")

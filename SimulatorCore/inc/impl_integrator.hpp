@@ -29,11 +29,11 @@ private:
     void compute_state_comb(ParticlesStateView &state_res, const pos_vel& a,
                             const pos_vel& b, scalar_t scalar);
 
-    void make_step( ParticlesStateView &particles, const ForceCalculator &force_calc,
+    void make_step( ParticlesStateView &particles, ForceCalculator &force_calc,
                     pos_vel& k_prev, pos_vel& k_next, scalar_t dt, scalar_t coeff);
 public:
     void integrate(ParticlesStateView& particles, 
-                   const ForceCalculator& force_calc, 
+                   ForceCalculator& force_calc, 
                    scalar_t dt) override;
     
     std::vector<ImplParam> get_params() const override;
