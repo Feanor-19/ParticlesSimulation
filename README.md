@@ -1,4 +1,4 @@
-# Физический симулятор частиц (WIP)
+# Физический симулятор частиц
 
 Состоит из двух частей: **SimulatorCore**, выполняющий все вычисления, и **SimulatorGUI** (WIP). Для двумерных векторов используется своя [мини-реализация векторной арифметики](SimulatorCore/inc/utilities.hpp).
 
@@ -65,7 +65,7 @@ sim_impl_manager.add_force_calc<ImplForceCalc::LennardJonesForceCalc>();
 
 - `RungeKutta4Integrator` - метод численного интегрирования Рунге-Кутты четвёртого порядка (классический).
 
-## SimulatorGUI (WIP)
+## SimulatorGUI
 
 ### Общая информация
 
