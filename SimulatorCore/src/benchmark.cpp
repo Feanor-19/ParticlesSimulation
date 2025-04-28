@@ -9,8 +9,10 @@ static void BM_LennardJonesCommon(benchmark::State& state)
 {
     LennardJonesImpl fc;
     
-    size_t x_size = 100;
-    size_t y_size = 100; 
+    const size_t x_size = 10;
+    const size_t y_size = 10;
+    const size_t n_iters = 1000;
+
     size_t size = x_size * y_size;
 
     std::vector<scalar_t> masses;
@@ -35,12 +37,13 @@ static void BM_LennardJonesCommon(benchmark::State& state)
     Vec2List res;
 
     for (auto _ : state) {
-        res = fc.compute_forces(particles);
+        for (size_t i = 0; i < n_iters; i++)
+            benchmark::DoNotOptimize(res = fc.compute_forces(particles));
     }
 }
 
-BENCHMARK(BM_LennardJonesCommon<LennardJonesOMPForceCalc>);
+BENCHMARK(BM_LennardJonesCommon<LennardJonesOMPForceCalc>)->UseRealTime();
+BENCHMARK(BM_LennardJonesCommon<LennardJonesThreadPoolForceCalc>)->UseRealTime();
 BENCHMARK(BM_LennardJonesCommon<LennardJonesForceCalc>);
-BENCHMARK(BM_LennardJonesCommon<LennardJonesThreadPoolForceCalc>);
 
 BENCHMARK_MAIN();

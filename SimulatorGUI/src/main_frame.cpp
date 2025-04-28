@@ -373,8 +373,10 @@ MainFrame::MainFrame()
 
     sim_impl_manager.add_integrator<ImplIntegrator::RungeKutta4Integrator>();
     sim_impl_manager.add_force_calc<ImplForceCalc::LennardJonesForceCalc>();
-    sim_impl_manager.add_force_calc<ImplForceCalc::HookeCentralForceCalc>();
+    sim_impl_manager.add_force_calc<ImplForceCalc::LennardJonesOMPForceCalc>();
+    sim_impl_manager.add_force_calc<ImplForceCalc::LennardJonesThreadPoolForceCalc>();
     sim_impl_manager.add_force_calc<ImplForceCalc::HookeAmongForceCalc>();
+    sim_impl_manager.add_force_calc<ImplForceCalc::HookeCentralForceCalc>();
 
     sim_impl_manager.set_force_calc(0);
     sim_impl_manager.set_integrator(0);
