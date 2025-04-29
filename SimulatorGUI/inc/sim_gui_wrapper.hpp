@@ -43,6 +43,7 @@ public:
     
     void push_back_particle(const Particle &sim_part, const ParticleVisual &vis_part);
     void remove_particle(size_t index);
+    void clear_particles();
 
     void save_particles(const std::string& save_name);
     void load_particles(const std::string& save_name);

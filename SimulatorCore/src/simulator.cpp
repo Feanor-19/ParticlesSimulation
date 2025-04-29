@@ -23,4 +23,9 @@ void Simulator::load_particles(ParticlesState&& new_particles)
     particles_ = std::move(new_particles);
 }
 
+void Simulator::clear_particles()
+{
+    particles_.clear();
+}
+
 } // namespace Simulation

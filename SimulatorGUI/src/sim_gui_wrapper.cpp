@@ -23,6 +23,12 @@ void SimGUIWrapper::remove_particle(size_t index)
     vis_particles_.erase(vis_particles_.begin() + index);
 }
 
+void SimGUI::SimGUIWrapper::clear_particles()
+{
+    simulator_.clear_particles();
+    vis_particles_.clear();
+}
+
 void SimGUI::SimGUIWrapper::save_particles(const std::string &save_name)
 {
     db_particles_.save_state(save_name, simulator_.particles(), vis_particles_);

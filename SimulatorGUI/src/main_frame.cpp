@@ -27,16 +27,25 @@ void MainFrame::CreateControls()
     label_info_charge_  = new wxStaticText(sizer_info->GetStaticBox(), wxID_ANY, "Charge: ");
     label_info_color_   = new wxStaticText(sizer_info->GetStaticBox(), wxID_ANY, "Color: ");
     label_info_size_    = new wxStaticText(sizer_info->GetStaticBox(), wxID_ANY, "Size: ");
+    label_info_pos_     = new wxStaticText(sizer_info->GetStaticBox(), wxID_ANY, "Position: ");
+    label_info_vel_     = new wxStaticText(sizer_info->GetStaticBox(), wxID_ANY, "Velocity: ");
     
     sizer_info->Add(label_info_mass_, 0, wxEXPAND | wxTOP, 5);
     sizer_info->Add(label_info_charge_, 0, wxEXPAND | wxTOP, 5);
     sizer_info->Add(label_info_color_, 0, wxEXPAND | wxTOP, 5);
     sizer_info->Add(label_info_size_, 0, wxEXPAND | wxTOP, 5);
+    sizer_info->Add(label_info_pos_, 0, wxEXPAND | wxTOP, 5);
+    sizer_info->Add(label_info_vel_, 0, wxEXPAND | wxTOP, 5);
     
     btn_delete = new wxButton(sizer_info->GetStaticBox(), wxID_ANY, "Delete");
     sizer_info->Add(btn_delete, 0, wxEXPAND | wxTOP, 10);
     
     sizer_control->Add(sizer_info, 0, wxEXPAND | wxALL, 10);
+
+    // -- Button remove all particles
+
+    wxButton* btn_delete_all = new wxButton(panel_, wxID_ANY, "Remove all particles");
+    sizer_control->Add(btn_delete_all, 0, wxEXPAND | wxBOTTOM, 10);
 
     // -- Group add particle
     wxStaticBoxSizer* sizer_add_particle = new wxStaticBoxSizer(wxVERTICAL, panel_, "Add particle");
@@ -139,6 +148,7 @@ void MainFrame::CreateControls()
     radio_creation_mode_->Bind(wxEVT_RADIOBOX, &MainFrame::OnCreationModeChanged, this);
     btn_pause_->Bind(wxEVT_TOGGLEBUTTON, &MainFrame::OnPause, this);
     btn_add->Bind(wxEVT_BUTTON, &MainFrame::OnAddParticle, this);
+    btn_delete_all->Bind(wxEVT_BUTTON, &MainFrame::OnDeleteAll, this);
 }
 
 template <typename SelectHandler>
@@ -212,6 +222,10 @@ void MainFrame::OnTimer(wxTimerEvent& event)
         std::chrono::duration<double> dt = now - last_step_;
         sim_gui_wrapper_.sim_step(dt.count());
         canvas_->Refresh();
+
+        if (canvas_->selected_particle().has_value())
+            UpdateParticleInfo();
+
         last_step_ = now;
     }
 }
@@ -246,10 +260,15 @@ void MainFrame::UpdateParticleInfo()
         const auto &sim_pts = sim_gui_wrapper_.sim_particles();
         ParticleVisual pt_vis = sim_gui_wrapper_.vis_particles()[pt_ind];
 
+        Geom::Vec2 pos = sim_pts.pos(pt_ind);
+        Geom::Vec2 vel = sim_pts.vel(pt_ind);
+
         label_info_mass_->SetLabel(wxString::Format("Mass: %.2f", sim_pts.mass(pt_ind)));
         label_info_charge_->SetLabel(wxString::Format("Charge: %.2f", sim_pts.charge(pt_ind)));
         label_info_color_->SetLabel(wxString::Format("Color: %s", pt_vis.colour.GetAsString()));
         label_info_size_->SetLabel(wxString::Format("Size: %d", pt_vis.size));
+        label_info_pos_->SetLabel(wxString::Format("Position: (%.2f, %.2f)", pos.x(), pos.y()));
+        label_info_vel_->SetLabel(wxString::Format("Velocity: (%.2f, %.2f)", vel.x(), vel.y()));
         btn_delete->Enable();
     }
     else {
@@ -257,6 +276,8 @@ void MainFrame::UpdateParticleInfo()
         label_info_charge_->SetLabel("Charge: ");
         label_info_color_->SetLabel("Color: ");
         label_info_size_->SetLabel("Size: ");
+        label_info_pos_->SetLabel("Position: ");
+        label_info_vel_->SetLabel("Velocity: ");
         btn_delete->Disable();
     }
     Layout();
@@ -406,6 +427,14 @@ void MainFrame::OnDeleteParticle(wxCommandEvent &event)
         UpdateParticleInfo();
         canvas_->Refresh();
     }
+}
+
+void MainFrame::OnDeleteAll(wxCommandEvent &event)
+{
+    sim_gui_wrapper_.clear_particles();
+    canvas_->unselect_particle();
+    UpdateParticleInfo();
+    canvas_->Refresh();
 }
 
 void MainFrame::OnSave(wxCommandEvent &event)

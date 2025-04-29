@@ -43,6 +43,8 @@ private:
     wxStaticText* label_info_charge_;
     wxStaticText* label_info_color_;
     wxStaticText* label_info_size_;
+    wxStaticText* label_info_pos_;
+    wxStaticText* label_info_vel_;
 
     wxComboBox* combo_type_;
     wxTextCtrl* ctrl_pos_x_;
@@ -98,6 +100,7 @@ private:
     void OnAddParticle(wxCommandEvent& event);
     void OnParticleSelected(wxCommandEvent& event);
     void OnDeleteParticle(wxCommandEvent& event);
+    void OnDeleteAll(wxCommandEvent& event);
     void OnSave(wxCommandEvent& event);
     void OnLoad(wxCommandEvent& event);
 

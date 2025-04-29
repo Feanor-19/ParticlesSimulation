@@ -103,6 +103,7 @@ public:
     void change_force_calc(ForceCalcPtr  new_force_calc) { force_calc_ = std::move(new_force_calc); }
 
     void load_particles(ParticlesState&& new_particles);
+    void clear_particles();
 
     Simulator(const Simulator&) = delete;
     Simulator& operator=(const Simulator&) = delete;
